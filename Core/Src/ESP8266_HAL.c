@@ -32,7 +32,7 @@ char textrc[110];
 char fragment[1];
 
 // Vectores Fragmentos
-char vIlum[17];
+char vIlum[20];
 char vSeg[2];
 
 char pine[2];
@@ -312,10 +312,13 @@ void ESP_messageHandler(void){
 		vIlum[10] = textrc[58]; // Luz Mesita Dch
 		vIlum[11] = textrc[61]; // Luz Oficina
 		vIlum[12] = textrc[64]; // Luz Gaming
-		vIlum[13] = textrc[67]; // Luz Garaje
-		vIlum[14] = textrc[70]; // Luz Jardín
-		vIlum[15] = textrc[73]; // Luz Porche
-		vIlum[16] = textrc[76]; // Luz Tendedero
+		vIlum[13] = textrc[64]; // Luz R
+		vIlum[14] = textrc[64]; // Luz G
+		vIlum[15] = textrc[64]; // Luz B
+		vIlum[16] = textrc[67]; // Luz Garaje
+		vIlum[17] = textrc[70]; // Luz Jardín
+		vIlum[18] = textrc[73]; // Luz Porche
+		vIlum[19] = textrc[76]; // Luz Tendedero
 
 
 		if(vIlum[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET);
@@ -354,63 +357,17 @@ void ESP_messageHandler(void){
 		if(vIlum[11] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET);
 		else if(vIlum[11] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
 
-		/*if(vIlum[12] == '0'){
+		if(vIlum[12] == '0'){
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 		}
 		else if(vIlum[12] == '1'){
 
-			//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 255); // PA8
-			//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 255); // PA9
-			//__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 255); // PA10
-
-			while(vIlum[12]){
-
-			int r = 255;
-			int g = 0;
-			int b = 0;
-
-			for(int j = 0; j < 255; j++) {
-
-				r--;
-				g++;
-
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, r); // red
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, g); // green
-				HAL_Delay(10); // Buscar contador para no bloquear el programa
-			}
-
-			r = 0;
-			g = 255;
-			b = 0;
-
-			for(int j = 0; j < 255; j++){
-
-				g--;
-				b++;
-
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, g); // green
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // blue
-				HAL_Delay(10); // Buscar contador para no bloquear el programa
-			}
-
-			r = 0;
-			g = 0;
-			b = 255;
-
-
-			for(int j = 0; j < 255; j++){
-
-				b--;
-				r++;
-
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // blue
-				__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, r); // red
-				HAL_Delay(10); // Buscar contador para no bloquear el programa
-			}
-			}
-		}*/
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, vIlum[14]); // PA8
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, vIlum[13]); // PA9
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, vIlum[15]); // PA10
+		}
 
 		if(vIlum[13] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 		else if(vIlum[13] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
