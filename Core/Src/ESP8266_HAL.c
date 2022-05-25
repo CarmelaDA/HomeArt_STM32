@@ -16,6 +16,7 @@ extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
 
 extern TIM_HandleTypeDef htim1;
+//extern TIM_HandleTypeDef htim4;
 
 // Definición de los puertos de comunicación
 #define WiFi_UART &huart2
@@ -407,6 +408,8 @@ void ESP_messageHandler(void){
 		//if(vSeg[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, RESET);
 		//else if(vSeg[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, SET);
 	}
+
+
 
 
 

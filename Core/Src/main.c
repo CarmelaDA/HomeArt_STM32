@@ -45,12 +45,15 @@
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 
 UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
+
+volatile int timbre = 0;
 
 /* USER CODE END PV */
 
@@ -61,12 +64,74 @@ static void MX_USART2_UART_Init(void);
 static void MX_USART6_UART_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin==Timbre_Pin)
+	{
+		timbre = 1;
+	}
+}
+
+int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_number) // Control de los rebotes
+{
+	static uint8_t button_count=0;
+	static int counter=0;
+
+	if (*button_int==1)
+	{
+		if (button_count==0)
+		{
+			counter=HAL_GetTick();
+			button_count++;
+		}
+		if (HAL_GetTick()-counter>=20)
+		{
+			counter=HAL_GetTick();
+			if (HAL_GPIO_ReadPin(GPIO_port, GPIO_number)!=1)
+			{
+				button_count=1;
+			}
+			else
+			{
+				button_count++;
+			}
+			if (button_count==4 ) // Periodo antirebotes
+			{
+				button_count=0;
+				*button_int=0;
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+void play_Timbre(void){
+
+	uint8_t tone;
+
+	tone = 20;
+	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET); //ZUMBADOR
+	HAL_Delay(300);
+
+	tone = 40;
+	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+	HAL_Delay(800);
+
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, RESET);
+}
 
 /* USER CODE END 0 */
 
@@ -83,7 +148,7 @@ int main(void)
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
- HAL_Init();
+  HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -102,10 +167,13 @@ int main(void)
   MX_USART6_UART_Init();
   MX_TIM5_Init();
   MX_TIM1_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
+
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
   //__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
   ESP_Init("iPhone Carmela","pistacho");
   //ESP_Init("iPhone de Mario","11111111");
@@ -122,6 +190,16 @@ int main(void)
 
 		//serverStart();
 		ESP_messageHandler();
+
+		// TIMBRE
+		if (debouncer(&timbre, Timbre_GPIO_Port, Timbre_Pin)){
+
+			play_Timbre();
+			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET); //ZUMBADOR
+			//HAL_Delay(500);
+			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, RESET);
+		}
+
 
 
   }
@@ -256,6 +334,65 @@ static void MX_TIM1_Init(void)
 }
 
 /**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 96-1;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 20;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
+
+}
+
+/**
   * @brief TIM5 Initialization Function
   * @param None
   * @retval None
@@ -381,13 +518,15 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin|L_Izquierda_Pin
-                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, Z_Activo_Pin|L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin
+                          |L_Izquierda_Pin|L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin
+                          |L_Fregadero_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, L_Cocina_Pin|L_Recibidor_Pin|L_Ambiente_Pin|L_Comedor_Pin
@@ -400,10 +539,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : L_Jardin_Pin Oficina_Pin L_Derecha_Pin L_Izquierda_Pin
-                           L_Domitorio_Pin L_Espejo_Pin L_Bano_Pin L_Fregadero_Pin */
-  GPIO_InitStruct.Pin = L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin|L_Izquierda_Pin
-                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin;
+  /*Configure GPIO pins : Z_Activo_Pin L_Jardin_Pin Oficina_Pin L_Derecha_Pin
+                           L_Izquierda_Pin L_Domitorio_Pin L_Espejo_Pin L_Bano_Pin
+                           L_Fregadero_Pin */
+  GPIO_InitStruct.Pin = Z_Activo_Pin|L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin
+                          |L_Izquierda_Pin|L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin
+                          |L_Fregadero_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -417,6 +558,16 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Timbre_Pin */
+  GPIO_InitStruct.Pin = Timbre_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(Timbre_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 

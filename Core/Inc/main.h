@@ -62,6 +62,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define WiFi_OK_Pin GPIO_PIN_0
 #define WiFi_OK_GPIO_Port GPIOC
+#define Z_Activo_Pin GPIO_PIN_15
+#define Z_Activo_GPIO_Port GPIOD
 #define L_Porche_Pin GPIO_PIN_10
 #define L_Porche_GPIO_Port GPIOC
 #define L_Tendedero_Pin GPIO_PIN_11
@@ -94,6 +96,9 @@ void Error_Handler(void);
 #define L_Comedor_GPIO_Port GPIOB
 #define L_Sala_Pin GPIO_PIN_7
 #define L_Sala_GPIO_Port GPIOB
+#define Timbre_Pin GPIO_PIN_0
+#define Timbre_GPIO_Port GPIOE
+#define Timbre_EXTI_IRQn EXTI0_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

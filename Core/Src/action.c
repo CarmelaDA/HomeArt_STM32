@@ -41,6 +41,29 @@ int rgb_value(char i, char j, char k){
 	return a+b+c;
 }
 
+void sonar(uint16_t _frec){
+
+}
+
+//void play_Timbre(void){
+
+	/*uint8_t tone;
+
+	tone = 200;
+
+	htim4.Instance->CCR1 = tone;
+	HAL_Delay(1000);
+
+	tone = 50;
+
+	htim4.Instance->CCR1 = tone;
+	HAL_Delay(2000);
+
+	tone = 0;*/
+//}
+
+
+
 
 
 

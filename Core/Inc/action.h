@@ -12,4 +12,9 @@
 #include <string.h>
 #include "main.h"
 
+
 int rgb_value(char i, char j, char k);
+
+// Zumbador Pasivo
+void sonar(uint16_t _frec);
+//void play_Timbre(void);
