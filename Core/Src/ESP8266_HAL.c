@@ -32,8 +32,9 @@ char textrc[110];
 char fragment[1];
 
 // Vectores Fragmentos
-char vIlum[20];
+char vIlum[26];
 char vSeg[2];
+int r, g, b;
 
 char pine[2];
 //, timeout, messageHandlerFlag, watchdog, enable_w;
@@ -312,13 +313,19 @@ void ESP_messageHandler(void){
 		vIlum[10] = textrc[58]; // Luz Mesita Dch
 		vIlum[11] = textrc[61]; // Luz Oficina
 		vIlum[12] = textrc[64]; // Luz Gaming
-		vIlum[13] = textrc[64]; // Luz R
-		vIlum[14] = textrc[64]; // Luz G
-		vIlum[15] = textrc[64]; // Luz B
-		vIlum[16] = textrc[67]; // Luz Garaje
-		vIlum[17] = textrc[70]; // Luz Jardín
-		vIlum[18] = textrc[73]; // Luz Porche
-		vIlum[19] = textrc[76]; // Luz Tendedero
+		vIlum[13] = textrc[67]; // Luz Rx100
+		vIlum[14] = textrc[68]; // Luz Rx10
+		vIlum[15] = textrc[69]; // Luz Rx1
+		vIlum[16] = textrc[72]; // Luz Gx100
+		vIlum[17] = textrc[73]; // Luz Gx10
+		vIlum[18] = textrc[74]; // Luz Gx1
+		vIlum[19] = textrc[77]; // Luz Bx100
+		vIlum[20] = textrc[78]; // Luz Bx10
+		vIlum[21] = textrc[79]; // Luz Bx1
+		vIlum[22] = textrc[82]; // Luz Garaje
+		vIlum[23] = textrc[85]; // Luz Jardín
+		vIlum[24] = textrc[88]; // Luz Porche
+		vIlum[25] = textrc[91]; // Luz Tendedero
 
 
 		if(vIlum[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET);
@@ -364,22 +371,28 @@ void ESP_messageHandler(void){
 		}
 		else if(vIlum[12] == '1'){
 
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, vIlum[14]); // PA8
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, vIlum[13]); // PA9
-			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, vIlum[15]); // PA10
+			//uint8_t r, g, b;
+
+			r = rgb_value (vIlum[13],vIlum[14],vIlum[15]);
+			g = rgb_value (vIlum[16],vIlum[17],vIlum[18]);
+			b = rgb_value (vIlum[19],vIlum[20],vIlum[21]);
+
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, g); // PA8
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, r); // PA9
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // PA10
 		}
 
-		if(vIlum[13] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
-		else if(vIlum[13] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+		if(vIlum[22] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
+		else if(vIlum[22] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 
-		if(vIlum[14] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
-		else if(vIlum[14] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		if(vIlum[23] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
+		else if(vIlum[23] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 
-		if(vIlum[15] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET);
-		else if(vIlum[15] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		if(vIlum[24] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET);
+		else if(vIlum[24] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
 
-		if(vIlum[16] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
-		else if(vIlum[16] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+		if(vIlum[25] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
+		else if(vIlum[25] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
 	}
 
 	// SEGURIDAD

@@ -11,3 +11,5 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
+
+int rgb_value(char i, char j, char k);
