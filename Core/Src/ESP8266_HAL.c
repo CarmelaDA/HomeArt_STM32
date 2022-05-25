@@ -354,7 +354,7 @@ void ESP_messageHandler(void){
 		if(vIlum[11] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET);
 		else if(vIlum[11] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
 
-		if(vIlum[12] == '0'){
+		/*if(vIlum[12] == '0'){
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
@@ -410,7 +410,7 @@ void ESP_messageHandler(void){
 				HAL_Delay(10); // Buscar contador para no bloquear el programa
 			}
 			}
-		}
+		}*/
 
 		if(vIlum[13] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 		else if(vIlum[13] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);

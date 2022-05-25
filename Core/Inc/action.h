@@ -11,8 +11,3 @@
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
-
-
-//extern TIM_HandleTypeDef htim1;
-
-void L_Gaming(int i);
