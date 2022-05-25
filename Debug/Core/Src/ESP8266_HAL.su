@@ -1,0 +1,8 @@
+ESP8266_HAL.c:64:6:ESP_clearBuffer	8	static
+ESP8266_HAL.c:71:6:ESP_Init	112	static
+ESP8266_HAL.c:170:5:serverSend	104	static
+ESP8266_HAL.c:186:6:serverHandle	1040	static
+ESP8266_HAL.c:216:6:serverStart	80	static
+ESP8266_HAL.c:249:9:stringCompare	32	static
+ESP8266_HAL.c:265:5:stringContains	40	static
+ESP8266_HAL.c:278:6:ESP_messageHandler	32	static

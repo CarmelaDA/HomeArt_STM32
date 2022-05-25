@@ -1,0 +1,15 @@
+UART_HAL.c:41:6:ringInit	4	static
+UART_HAL.c:58:6:storeChar	24	static
+UART_HAL.c:72:5:lookFor	32	static
+UART_HAL.c:102:6:getData	56	static
+UART_HAL.c:164:6:UART_flush	16	static
+UART_HAL.c:180:5:UART_peek	16	static
+UART_HAL.c:200:5:UART_read	24	static
+UART_HAL.c:232:6:UART_write	24	static
+UART_HAL.c:267:5:UART_available	16	static
+UART_HAL.c:277:5:UART_getAfter	32	static
+UART_HAL.c:291:6:UART_send	16	static
+UART_HAL.c:297:6:UART_changeBase	72	static
+UART_HAL.c:319:5:UART_copyUpto	40	static
+UART_HAL.c:357:5:UART_waitFor	24	static
+UART_HAL.c:392:6:UART_isr	32	static
