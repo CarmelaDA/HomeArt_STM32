@@ -147,33 +147,37 @@ void play_Timbre(void){
 
 }
 
-void play_Alarma(int i){
+void play_Alarma(){
 
 	uint8_t tone;
 
-	if(i==1){
-		//for(int n=0; n<100; n++){
-			tone = 40;
-			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-			HAL_Delay(800);
-			tone = 30;
-			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-			HAL_Delay(300);
-			tone = 20;
-			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-			HAL_Delay(300);
-			tone = 10;
-			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-			HAL_Delay(300);
-		//}
-	}
+	for(tone = 40; tone >= 10; tone = tone-10){
+	//for(int i=40; i>9; i-10){
 
-	if(i==0)__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
+	//tone = 40;
+		__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+		__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+		HAL_Delay(300);
+
+	/*tone = 30;
+	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+	HAL_Delay(300);
+
+	tone = 20;
+	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+	HAL_Delay(300);
+
+	tone = 10;
+	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+	HAL_Delay(300);*/
+
+
+	}
 }
+
 
 /* USER CODE END 0 */
 
@@ -239,14 +243,14 @@ int main(void)
 		}
 		// STOP
 		if (debouncer(&stop, STOP_GPIO_Port, STOP_Pin)){
-			play_Alarma(0);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 		}
 		// ALARMA
 		if (debouncer(&interior, S_Int_GPIO_Port, S_Int_Pin)){
-			if(vSeg[0]==1) play_Alarma(1);
+			if(vSeg[0] == '1') play_Alarma();
 		}
 		if (debouncer(&exterior, S_Ext_GPIO_Port, S_Ext_Pin)){
-			if(vSeg[1]==1) play_Alarma(1);
+			if(vSeg[1] == '1') play_Alarma();
 		}
   }
   /* USER CODE END 3 */
@@ -612,11 +616,17 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 1, 1);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 1, 1);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
   HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 1, 1);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 }
 
