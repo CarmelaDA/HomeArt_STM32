@@ -54,6 +54,9 @@ UART_HandleTypeDef huart6;
 /* USER CODE BEGIN PV */
 
 volatile int timbre = 0;
+volatile int stop = 0;
+volatile int interior = 0;
+volatile int exterior = 0;
 
 /* USER CODE END PV */
 
@@ -78,6 +81,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	{
 		timbre = 1;
 	}
+    if (GPIO_Pin==STOP_Pin)
+    {
+    	stop = 1;
+    }
+    if (GPIO_Pin==S_Int_Pin)
+    {
+        interior = 1;
+    }
+    if (GPIO_Pin==S_Ext_Pin)
+    {
+        exterior = 1;
+    }
 }
 
 int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_number) // Control de los rebotes
@@ -121,7 +136,6 @@ void play_Timbre(void){
 	tone = 20;
 	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET); //ZUMBADOR
 	HAL_Delay(300);
 
 	tone = 40;
@@ -130,7 +144,35 @@ void play_Timbre(void){
 	HAL_Delay(800);
 
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, RESET);
+
+}
+
+void play_Alarma(int i){
+
+	uint8_t tone;
+
+	if(i==1){
+		//for(int n=0; n<100; n++){
+			tone = 40;
+			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+			HAL_Delay(800);
+			tone = 30;
+			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+			HAL_Delay(300);
+			tone = 20;
+			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+			HAL_Delay(300);
+			tone = 10;
+			__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
+			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
+			HAL_Delay(300);
+		//}
+	}
+
+	if(i==0)__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 }
 
 /* USER CODE END 0 */
@@ -193,15 +235,19 @@ int main(void)
 
 		// TIMBRE
 		if (debouncer(&timbre, Timbre_GPIO_Port, Timbre_Pin)){
-
 			play_Timbre();
-			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, SET); //ZUMBADOR
-			//HAL_Delay(500);
-			//HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, RESET);
 		}
-
-
-
+		// STOP
+		if (debouncer(&stop, STOP_GPIO_Port, STOP_Pin)){
+			play_Alarma(0);
+		}
+		// ALARMA
+		if (debouncer(&interior, S_Int_GPIO_Port, S_Int_Pin)){
+			if(vSeg[0]==1) play_Alarma(1);
+		}
+		if (debouncer(&exterior, S_Ext_GPIO_Port, S_Ext_Pin)){
+			if(vSeg[1]==1) play_Alarma(1);
+		}
   }
   /* USER CODE END 3 */
 }
@@ -513,12 +559,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin, GPIO_PIN_RESET);
@@ -531,6 +577,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, L_Cocina_Pin|L_Recibidor_Pin|L_Ambiente_Pin|L_Comedor_Pin
                           |L_Sala_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : STOP_Pin S_Int_Pin Timbre_Pin S_Ext_Pin */
+  GPIO_InitStruct.Pin = STOP_Pin|S_Int_Pin|Timbre_Pin|S_Ext_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : WiFi_OK_Pin L_Porche_Pin L_Tendedero_Pin L_Garaje_Pin */
   GPIO_InitStruct.Pin = WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin;
@@ -559,15 +611,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Timbre_Pin */
-  GPIO_InitStruct.Pin = Timbre_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(Timbre_GPIO_Port, &GPIO_InitStruct);
-
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
 }
 

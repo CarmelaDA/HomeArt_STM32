@@ -32,9 +32,7 @@ uint8_t pin = 0;
 char textrc[110];
 char fragment[1];
 
-// Vectores Fragmentos
-char vIlum[26];
-char vSeg[2];
+
 int r, g, b;
 
 char pine[2];
@@ -401,12 +399,6 @@ void ESP_messageHandler(void){
 		UART_send("SEGURIDAD \n", PC_UART);
 		vSeg[0] = textrc[28]; // Alarma Interior
 		vSeg[1] = textrc[31]; // Alarma Exterior
-
-		//if(vSeg[0] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, RESET);
-		//else if(vSeg[0] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, SET);
-
-		//if(vSeg[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, RESET);
-		//else if(vSeg[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_6, SET);
 	}
 
 

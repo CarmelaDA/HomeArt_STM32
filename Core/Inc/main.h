@@ -60,6 +60,11 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define STOP_Pin GPIO_PIN_2
+#define STOP_GPIO_Port GPIOE
+#define STOP_EXTI_IRQn EXTI2_IRQn
+#define S_Int_Pin GPIO_PIN_3
+#define S_Int_GPIO_Port GPIOE
 #define WiFi_OK_Pin GPIO_PIN_0
 #define WiFi_OK_GPIO_Port GPIOC
 #define Z_Activo_Pin GPIO_PIN_15
@@ -99,6 +104,8 @@ void Error_Handler(void);
 #define Timbre_Pin GPIO_PIN_0
 #define Timbre_GPIO_Port GPIOE
 #define Timbre_EXTI_IRQn EXTI0_IRQn
+#define S_Ext_Pin GPIO_PIN_1
+#define S_Ext_GPIO_Port GPIOE
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
