@@ -16,7 +16,7 @@ extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
 
 extern TIM_HandleTypeDef htim1;
-//extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim2;
 
 // Definición de los puertos de comunicación
 #define WiFi_UART &huart2
@@ -278,23 +278,25 @@ int stringContains(char bufferArray[], char searchedString[], uint16_t length){
 void ESP_messageHandler(void){
 
 	//__HAL_UART_DISABLE_IT(&huart2, UART_IT_RXNE);
-	ESP_clearBuffer();
-	//memset(textrc, 0, 70);
+
+	memset(textrc, 0, 100);
 
 	HAL_UART_Receive(&huart2, (uint8_t *)textrc, 100, 100); //(uint8_t *)
 
-	//while (!(UART_waitFor("SET", WiFi_UART)))
-	{
-		HAL_UART_Transmit(&huart6, (uint8_t *)textrc, 100, HAL_MAX_DELAY);
-		//HAL_Delay(10);
-		UART_send("\n", PC_UART);
-	}
+	HAL_UART_Transmit(&huart6, (uint8_t *)textrc, 100, HAL_MAX_DELAY);
+	UART_send("\n", PC_UART);
 
 	fragment[0] = textrc[25]; // Asignación de Fragmento
 	HAL_UART_Transmit(&huart6, (uint8_t *)fragment, 1, HAL_MAX_DELAY);
 	UART_send("\n", PC_UART);
-	//HAL_UART_Transmit(&huart6, (uint8_t *)vIlum, 2, HAL_MAX_DELAY);
-	//UART_send("\n", PC_UART);
+
+
+	// SEGURIDAD
+	if (fragment[0] == 's'){
+		UART_send("SEGURIDAD \n", PC_UART);
+		vSeg[0] = textrc[28]; // Alarma Interior
+		vSeg[1] = textrc[31]; // Alarma Exterior
+	}
 
 	// ILUMINACIÓN
 	if (fragment[0] == 'i'){
@@ -394,17 +396,27 @@ void ESP_messageHandler(void){
 		else if(vIlum[25] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
 	}
 
-	// SEGURIDAD
-	if (fragment[0] == 'a'){
-		UART_send("SEGURIDAD \n", PC_UART);
-		vSeg[0] = textrc[28]; // Alarma Interior
-		vSeg[1] = textrc[31]; // Alarma Exterior
+	// PUERTAS Y VENTANAS
+	if (fragment[0] == 'p'){
+		UART_send("PUERTAS Y VENTANAS (PUERTA PARCELA)\n", PC_UART);
+		vVent[0] = textrc[28]; // Puerta Parcela
+	}
+	if (fragment[0] == 'g'){
+		UART_send("PUERTAS Y VENTANAS (PUERTA GARAJE)\n", PC_UART);
+		vVent[1] = textrc[28]; // Puerta Garaje
+	}
+	if (fragment[0] == 'l'){
+		UART_send("PUERTAS Y VENTANAS (VENTANA SALÓN)\n", PC_UART);
+		vVent[2] = textrc[28]; // Ventana Salón
+	}
+	if (fragment[0] == 'd'){
+		UART_send("PUERTAS Y VENTANAS (VENTANA DORMITORIO)\n", PC_UART);
+		vVent[3] = textrc[28]; // Ventana Dormitorio
+	}
+	if (fragment[0] == 'o'){
+		UART_send("PUERTAS Y VENTANAS (VENTANA OFICINA)\n", PC_UART);
+		vVent[4] = textrc[28]; // Ventana Oficina
 	}
 
-
-
-
-
-	//ESP_clearBuffer();
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 }

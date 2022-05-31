@@ -9,8 +9,9 @@
 #define INC_ESP8266_HAL_H_
 
 // Vectores Fragmentos
-char vIlum[26];
 char vSeg[2];
+char vIlum[26];
+char vVent[5];
 
 void ESP_Init (char *SSID, char *PASSWD);
 
