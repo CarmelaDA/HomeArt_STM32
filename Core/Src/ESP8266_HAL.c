@@ -418,5 +418,17 @@ void ESP_messageHandler(void){
 		vVent[4] = textrc[28]; // Ventana Oficina
 	}
 
+	// TIEMPO
+	if (fragment[0] == 't'){
+    }
+
+	// EXTERIOR
+	if (fragment[0] == 'e'){
+	}
+
+	// HUERTO
+	if (fragment[0] == 'h'){
+	}
+
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
 }
