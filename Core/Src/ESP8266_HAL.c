@@ -426,6 +426,14 @@ void ESP_messageHandler(void){
 	if (fragment[0] == 'e'){
 	}
 
+	// SALÓN
+	if (fragment[0] == 'n'){
+	}
+
+	// COCINA
+	if (fragment[0] == 'c'){
+	}
+
 	// HUERTO
 	if (fragment[0] == 'h'){
 	}
