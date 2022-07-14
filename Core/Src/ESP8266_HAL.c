@@ -434,8 +434,28 @@ void ESP_messageHandler(void){
 	if (fragment[0] == 'c'){
 	}
 
+	// BAÑO
+	if (fragment[0] == 'b'){
+	}
+
+	// DORMITORIO
+	if (fragment[0] == 'r'){
+	}
+
+	// OFICINA
+	if (fragment[0] == 'f'){
+	}
+
+	// GARAJE
+	if (fragment[0] == 'j'){
+	}
+
 	// HUERTO
 	if (fragment[0] == 'h'){
+	}
+
+	// AJUSTES
+	if (fragment[0] == 'a'){
 	}
 
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);

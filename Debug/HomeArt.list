@@ -1478,8 +1478,8 @@ void ESP_messageHandler(void){
  8000d0c:	7f1a      	ldrb	r2, [r3, #28]
  8000d0e:	4b0d      	ldr	r3, [pc, #52]	; (8000d44 <ESP_messageHandler+0x554>)
  8000d10:	711a      	strb	r2, [r3, #4]
-	// HUERTO
-	if (fragment[0] == 'h'){
+	// AJUSTES
+	if (fragment[0] == 'a'){
 	}
 
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
