@@ -12,6 +12,7 @@
 char vSeg[2];
 char vIlum[26];
 char vVent[5];
+char vExt[5];
 
 void ESP_Init (char *SSID, char *PASSWD);
 

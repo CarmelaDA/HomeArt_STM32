@@ -60,8 +60,7 @@ volatile int timbre = 0;
 volatile int stop = 0;
 volatile int interior = 0;
 volatile int exterior = 0;
-volatile int abierto = 0;
-volatile int cerrado = 0;
+volatile int fin = 0;
 
 /* USER CODE END PV */
 
@@ -85,11 +84,11 @@ static void MX_TIM8_Init(void);
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin==Timbre_Pin)
+    if (GPIO_Pin==B_Timbre_Pin)
 	{
 		timbre = 1;
 	}
-    if (GPIO_Pin==STOP_Pin)
+    if (GPIO_Pin==B_Stop_Pin)
     {
     	stop = 1;
     }
@@ -101,13 +100,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     {
         exterior = 1;
     }
-    if (GPIO_Pin==Abierto_Pin)
+    if (GPIO_Pin==Fin_Servo_Pin)
     {
-        abierto = 1;
-    }
-    if (GPIO_Pin==Cerrado_Pin)
-    {
-        cerrado = 1;
+        fin = 1;
     }
 }
 
@@ -222,9 +217,11 @@ int main(void)
   // Servo Parcela
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   // Servo Garaje
-  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);
-  //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-  //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
+  // Servo Tendedero
+  // Servo Salón
+  // Servo Dormitorio
+  // Servo Oficina
   // Zumbador
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 
@@ -245,14 +242,12 @@ int main(void)
 		ESP_messageHandler();
 
 		// TIMBRE
-		if (debouncer(&timbre, Timbre_GPIO_Port, Timbre_Pin)){
+		if (debouncer(&timbre, B_Timbre_GPIO_Port, B_Timbre_Pin)){
 			play_Timbre();
 		}
 
-		// STOP
-		if (debouncer(&stop, STOP_GPIO_Port, STOP_Pin)){
-			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
-		}
+		// STOP ALARMA
+		// Conexión Wi-Fi
 
 		// ALARMA
 		if (debouncer(&interior, S_Int_GPIO_Port, S_Int_Pin)){
@@ -262,16 +257,16 @@ int main(void)
 			if(vSeg[1] == '1') play_Alarma();
 		}
 
-		// PUERTA PARCELA
-		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 88);
-		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
+		// PUERTA PARCELA (S_Parcela)
+		if(vVent[1]=='1' /*|| vExt[4]=='1'*/) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
+		if(vVent[1]=='0' /*|| vExt[4]=='0'*/) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
 
 		// PUERTA GARAJE
-		if(vVent[1]=='1') __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 88);
-		if(vVent[1]=='0') __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 92);
+		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); //50 HORARIO
+		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); //100 ANTIHORARIO
 
 		// VENTANA SALÓN
-		if(vVent[2]=='1') {
+		/*if(vVent[2]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 90);
@@ -281,10 +276,10 @@ int main(void)
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 90);
 		}
-		vVent[2]='x';
+		vVent[2]='x';*/
 
 		// VENTANA DORMITORIO
-		if(vVent[3]=='1') {
+		/*if(vVent[3]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
@@ -294,10 +289,10 @@ int main(void)
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
-		vVent[3]='x';
+		vVent[3]='x';*/
 
 		// VENTANA OFICINA
-		if(vVent[4]=='1') {
+		/*if(vVent[4]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
@@ -307,17 +302,19 @@ int main(void)
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
-		vVent[4]='x';
+		vVent[4]='x';*/
+
+		// TOLDO TENDEDERO
+		//if(vExt[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
+		//if(vExt[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
 
 		// FINES DE CARRERA
-		if((debouncer(&abierto, Abierto_GPIO_Port, Abierto_Pin) && !debouncer(&cerrado, Cerrado_GPIO_Port, Cerrado_Pin))||
-				(debouncer(&cerrado, Cerrado_GPIO_Port, Cerrado_Pin) && !debouncer(&abierto, Abierto_GPIO_Port, Abierto_Pin))){
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90);
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90);
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-			vVent[0]='x';
-			vVent[1]='x';
-			//vExt[X]='x';
+		if(debouncer(&fin, Fin_Servo_GPIO_Port, Fin_Servo_Pin)){
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
+			vVent[0]='x'; // S_Parcela
+			vExt[4]='x'; // S_Parcela
+			vVent[1]='x'; // S_Garaje
 		}
   }
   /* USER CODE END 3 */
@@ -506,10 +503,6 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
@@ -531,7 +524,6 @@ static void MX_TIM3_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
 
   /* USER CODE BEGIN TIM3_Init 1 */
 
@@ -551,36 +543,15 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
-  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -662,9 +633,9 @@ static void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 1 */
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 0;
+  htim5.Init.Prescaler = 96-1;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 4294967295;
+  htim5.Init.Period = 2000-1;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
@@ -702,8 +673,6 @@ static void MX_TIM8_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
   /* USER CODE BEGIN TIM8_Init 1 */
 
@@ -724,42 +693,15 @@ static void MX_TIM8_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim8) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim8, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_PWM_ConfigChannel(&htim8, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim8, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM8_Init 2 */
 
   /* USER CODE END TIM8_Init 2 */
-  HAL_TIM_MspPostInit(&htim8);
 
 }
 
@@ -843,32 +785,37 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, Z_Activo_Pin|L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin
-                          |L_Izquierda_Pin|L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin
-                          |L_Fregadero_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, L_Jardin_Pin|L_Oficina_Pin|L_Derecha_Pin|GPIO_PIN_3
+                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, L_Cocina_Pin|L_Recibidor_Pin|L_Ambiente_Pin|L_Comedor_Pin
                           |L_Sala_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : STOP_Pin S_Int_Pin Timbre_Pin S_Ext_Pin */
-  GPIO_InitStruct.Pin = STOP_Pin|S_Int_Pin|Timbre_Pin|S_Ext_Pin;
+  /*Configure GPIO pin : B_Stop_Pin */
+  GPIO_InitStruct.Pin = B_Stop_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(B_Stop_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : S_Int_Pin B_Timbre_Pin S_Ext_Pin */
+  GPIO_InitStruct.Pin = S_Int_Pin|B_Timbre_Pin|S_Ext_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Abierto_Pin Cerrado_Pin */
-  GPIO_InitStruct.Pin = Abierto_Pin|Cerrado_Pin;
+  /*Configure GPIO pin : Fin_Servo_Pin */
+  GPIO_InitStruct.Pin = Fin_Servo_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(Fin_Servo_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : WiFi_OK_Pin L_Porche_Pin L_Tendedero_Pin L_Garaje_Pin */
   GPIO_InitStruct.Pin = WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin;
@@ -877,12 +824,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Z_Activo_Pin L_Jardin_Pin Oficina_Pin L_Derecha_Pin
-                           L_Izquierda_Pin L_Domitorio_Pin L_Espejo_Pin L_Bano_Pin
-                           L_Fregadero_Pin */
-  GPIO_InitStruct.Pin = Z_Activo_Pin|L_Jardin_Pin|Oficina_Pin|L_Derecha_Pin
-                          |L_Izquierda_Pin|L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin
-                          |L_Fregadero_Pin;
+  /*Configure GPIO pins : L_Jardin_Pin L_Oficina_Pin L_Derecha_Pin PD3
+                           L_Domitorio_Pin L_Espejo_Pin L_Bano_Pin L_Fregadero_Pin */
+  GPIO_InitStruct.Pin = L_Jardin_Pin|L_Oficina_Pin|L_Derecha_Pin|GPIO_PIN_3
+                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -904,17 +849,11 @@ static void MX_GPIO_Init(void)
   HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI1_IRQn);
 
-  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
-
   HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
   HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
-
-  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 

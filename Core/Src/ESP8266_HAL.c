@@ -399,23 +399,23 @@ void ESP_messageHandler(void){
 	// PUERTAS Y VENTANAS
 	if (fragment[0] == 'p'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA PARCELA)\n", PC_UART);
-		vVent[0] = textrc[28]; // Puerta Parcela
+		vVent[1] = textrc[28]; // Puerta Parcela
 	}
 	if (fragment[0] == 'g'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA GARAJE)\n", PC_UART);
-		vVent[1] = textrc[28]; // Puerta Garaje
+		vVent[0] = textrc[31]; // Puerta Garaje
 	}
 	if (fragment[0] == 'l'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA SALÓN)\n", PC_UART);
-		vVent[2] = textrc[28]; // Ventana Salón
+		vVent[2] = textrc[34]; // Ventana Salón
 	}
 	if (fragment[0] == 'd'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA DORMITORIO)\n", PC_UART);
-		vVent[3] = textrc[28]; // Ventana Dormitorio
+		vVent[3] = textrc[37]; // Ventana Dormitorio
 	}
 	if (fragment[0] == 'o'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA OFICINA)\n", PC_UART);
-		vVent[4] = textrc[28]; // Ventana Oficina
+		vVent[4] = textrc[40]; // Ventana Oficina
 	}
 
 	// TIEMPO
@@ -424,6 +424,21 @@ void ESP_messageHandler(void){
 
 	// EXTERIOR
 	if (fragment[0] == 'e'){
+		UART_send("EXTERIOR\n", PC_UART);
+		vExt[0] = textrc[28]; 	// Toldo Tendedero
+		vExt[1] = textrc[31]; 	// Luz Tendedero
+		vExt[2] = textrc[34]; 	// Luz Porche
+		vExt[3] = textrc[37]; 	// Luz Jardín
+		vExt[4] = textrc[40]; 	// Puerta Parcela
+
+		if(vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET); // Luz Tendedero
+		else if(vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+
+		if(vExt[2] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); // Luz Porche
+		else if(vExt[2] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+
+		if(vExt[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); // Luz Jardín
+		else if(vExt[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 	}
 
 	// SALÓN
