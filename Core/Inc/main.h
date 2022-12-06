@@ -72,6 +72,16 @@ void Error_Handler(void);
 #define WiFi_OK_GPIO_Port GPIOC
 #define S_Parcela_Pin GPIO_PIN_0
 #define S_Parcela_GPIO_Port GPIOA
+#define S_Garaje_Pin GPIO_PIN_1
+#define S_Garaje_GPIO_Port GPIOA
+#define S_Dormitorio_Pin GPIO_PIN_7
+#define S_Dormitorio_GPIO_Port GPIOA
+#define S_Oficina_Pin GPIO_PIN_0
+#define S_Oficina_GPIO_Port GPIOB
+#define S_Salon_Pin GPIO_PIN_1
+#define S_Salon_GPIO_Port GPIOB
+#define S_Tendedero_Pin GPIO_PIN_10
+#define S_Tendedero_GPIO_Port GPIOB
 #define Z_Timbre_Pin GPIO_PIN_12
 #define Z_Timbre_GPIO_Port GPIOD
 #define L_GamingG_Pin GPIO_PIN_8

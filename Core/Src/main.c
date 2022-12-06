@@ -219,9 +219,13 @@ int main(void)
   // Servo Garaje
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
   // Servo Tendedero
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
   // Servo Salón
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
   // Servo Dormitorio
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
   // Servo Oficina
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
   // Zumbador
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 
@@ -257,64 +261,66 @@ int main(void)
 			if(vSeg[1] == '1') play_Alarma();
 		}
 
-		// PUERTA PARCELA (S_Parcela)
-		if(vVent[1]=='1' /*|| vExt[4]=='1'*/) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
-		if(vVent[1]=='0' /*|| vExt[4]=='0'*/) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
+		// PUERTA PARCELA (90)
+		if(vVent[1]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
+		if(vVent[1]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
 
-		// PUERTA GARAJE
+		// PUERTA GARAJE (90)
 		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); //50 HORARIO
 		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); //100 ANTIHORARIO
 
-		// VENTANA SALÓN
-		/*if(vVent[2]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 88);
+		// TOLDO TENDEDERO (90)
+		if(vExt[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 89);
+		if(vExt[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
+
+		// VENTANA SALÓN (96)
+		if(vVent[2]=='1') {
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 95);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 96);
 		}
 		if(vVent[2]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 92);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 97);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 96);
 		}
-		vVent[2]='x';*/
+		vVent[2]='x';
 
-		// VENTANA DORMITORIO
-		/*if(vVent[3]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 88);
+		// VENTANA DORMITORIO (171)
+		if(vVent[3]=='1') {
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 168);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 171);
 		}
 		if(vVent[3]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 92);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 172);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 171);
 		}
-		vVent[3]='x';*/
+		vVent[3]='x';
 
 		// VENTANA OFICINA
-		/*if(vVent[4]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
+		if(vVent[4]=='1') {
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 45);
+			HAL_Delay(3000);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 135);
+		}
+		if(vVent[4]=='0') {
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 100);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
-		if(vVent[4]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 92);
-			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
-		}
-		vVent[4]='x';*/
+		vVent[4]='x';
 
-		// TOLDO TENDEDERO
-		//if(vExt[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
-		//if(vExt[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
-
-		// FINES DE CARRERA
+		// FINALES DE CARRERA
 		if(debouncer(&fin, Fin_Servo_GPIO_Port, Fin_Servo_Pin)){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90); // S_Tendedero
 			vVent[0]='x'; // S_Parcela
 			vExt[4]='x'; // S_Parcela
 			vVent[1]='x'; // S_Garaje
+			vExt[0]='x'; // S_Tendedero
 		}
   }
   /* USER CODE END 3 */
@@ -503,6 +509,10 @@ static void MX_TIM2_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
@@ -524,6 +534,7 @@ static void MX_TIM3_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
 
   /* USER CODE BEGIN TIM3_Init 1 */
 
@@ -543,15 +554,36 @@ static void MX_TIM3_Init(void)
   {
     Error_Handler();
   }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
 
 }
 
@@ -785,8 +817,8 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|L_Porche_Pin|L_Tendedero_Pin|L_Garaje_Pin, GPIO_PIN_RESET);
