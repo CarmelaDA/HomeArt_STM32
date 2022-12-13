@@ -420,6 +420,11 @@ void ESP_messageHandler(void){
 
 	// TIEMPO
 	if (fragment[0] == 't'){
+		UART_send("TIEMPO\n", PC_UART);
+		vTemp[0] = textrc[28]; 	// Vent. Salón
+		vTemp[1] = textrc[31]; 	// Vent. Dormitorio
+		vTemp[2] = textrc[34]; 	// Vent. Oficina
+		vTemp[4] = textrc[37]; 	// Calefacción
     }
 
 	// EXTERIOR
