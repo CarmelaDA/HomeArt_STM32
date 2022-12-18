@@ -70,10 +70,14 @@ void Error_Handler(void);
 #define Fin_Servo_EXTI_IRQn EXTI4_IRQn
 #define WiFi_OK_Pin GPIO_PIN_0
 #define WiFi_OK_GPIO_Port GPIOC
+#define Lluvia_Pin GPIO_PIN_1
+#define Lluvia_GPIO_Port GPIOC
 #define S_Parcela_Pin GPIO_PIN_0
 #define S_Parcela_GPIO_Port GPIOA
 #define S_Garaje_Pin GPIO_PIN_1
 #define S_Garaje_GPIO_Port GPIOA
+#define LDR_Pin GPIO_PIN_4
+#define LDR_GPIO_Port GPIOA
 #define LDR_Testigo_Pin GPIO_PIN_5
 #define LDR_Testigo_GPIO_Port GPIOA
 #define S_Dormitorio_Pin GPIO_PIN_7
@@ -82,6 +86,8 @@ void Error_Handler(void);
 #define DC_Salon_1_GPIO_Port GPIOC
 #define DC_Salon_2_Pin GPIO_PIN_5
 #define DC_Salon_2_GPIO_Port GPIOC
+#define HW_390_Pin GPIO_PIN_0
+#define HW_390_GPIO_Port GPIOB
 #define DHT11_Pin GPIO_PIN_7
 #define DHT11_GPIO_Port GPIOE
 #define DHT22_Pin GPIO_PIN_8
@@ -130,6 +136,8 @@ void Error_Handler(void);
 #define L_Comedor_GPIO_Port GPIOB
 #define L_Sala_Pin GPIO_PIN_7
 #define L_Sala_GPIO_Port GPIOB
+#define Peltier_Pin GPIO_PIN_9
+#define Peltier_GPIO_Port GPIOB
 #define B_Timbre_Pin GPIO_PIN_0
 #define B_Timbre_GPIO_Port GPIOE
 #define B_Timbre_EXTI_IRQn EXTI0_IRQn
