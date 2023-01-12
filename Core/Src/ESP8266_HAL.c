@@ -329,41 +329,41 @@ void ESP_messageHandler(void){
 		vIlum[25] = textrc[91]; // Luz Tendedero
 
 
-		if(vIlum[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET);
-		else if(vIlum[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, SET);
+		if(vIlum[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET);
+		else if(vIlum[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
 
-		if(vIlum[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET);
-		else if(vIlum[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
+		if(vIlum[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET);
+		else if(vIlum[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
 
-		if(vIlum[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET);
-		else if(vIlum[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
+		if(vIlum[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET);
+		else if(vIlum[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
 
-		if(vIlum[3] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET);
-		else if(vIlum[3] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
+		if(vIlum[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
+		else if(vIlum[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 
-		if(vIlum[4] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET);
-		else if(vIlum[4] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
+		if(vIlum[4] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET);
+		else if(vIlum[4] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
 
-		if(vIlum[5] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET);
-		else if(vIlum[5] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
+		if(vIlum[5] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET);
+		else if(vIlum[5] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
 		if(vIlum[6] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET);
 		else if(vIlum[6] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
 
-		if(vIlum[7] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET);
-		else if(vIlum[7] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
+		if(vIlum[7] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET);
+		else if(vIlum[7] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
 
-		if(vIlum[8] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET);
-		else if(vIlum[8] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
+		if(vIlum[8] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET);
+		else if(vIlum[8] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
 
-		if(vIlum[9] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET);
-		else if(vIlum[9] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
+		if(vIlum[9] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET);
+		else if(vIlum[9] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
 
-		if(vIlum[10] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET);
-		else if(vIlum[10] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
+		if(vIlum[10] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET);
+		else if(vIlum[10] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
 
-		if(vIlum[11] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET);
-		else if(vIlum[11] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
+		if(vIlum[11] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET);
+		else if(vIlum[11] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
 
 		if(vIlum[12] == '0'){
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
@@ -383,17 +383,17 @@ void ESP_messageHandler(void){
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // PA10
 		}
 
-		if(vIlum[22] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
-		else if(vIlum[22] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+		if(vIlum[22] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
+		else if(vIlum[22] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
 
-		if(vIlum[23] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
-		else if(vIlum[23] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		if(vIlum[23] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET);
+		else if(vIlum[23] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
 
-		if(vIlum[24] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET);
-		else if(vIlum[24] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		if(vIlum[24] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET);
+		else if(vIlum[24] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
 
-		if(vIlum[25] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
-		else if(vIlum[25] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+		if(vIlum[25] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
+		else if(vIlum[25] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 	}
 
 	// PUERTAS Y VENTANAS

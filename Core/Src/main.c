@@ -58,6 +58,7 @@ TIM_HandleTypeDef htim8;
 TIM_HandleTypeDef htim9;
 
 UART_HandleTypeDef huart2;
+UART_HandleTypeDef huart3;
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
@@ -99,6 +100,7 @@ static void MX_TIM6_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_ADC2_Init(void);
 static void MX_ADC3_Init(void);
+static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -198,19 +200,19 @@ void luces_automat(int i){
 
 	if(i){
 		//vIlum[23]='1';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
 		//vIlum[24]='1';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
 		//vIlum[25]='1';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 	}
 	else{
 		//vIlum[23]='0';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET);
 		//vIlum[24]='0';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET);
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET);
 		//vIlum[25]='0';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 	}
 }
 
@@ -265,6 +267,7 @@ int main(void)
   MX_ADC1_Init();
   MX_ADC2_Init();
   MX_ADC3_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
   // LED RGB Gaming
@@ -1119,6 +1122,39 @@ static void MX_USART2_UART_Init(void)
 }
 
 /**
+  * @brief USART3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART3_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART3_Init 0 */
+
+  /* USER CODE END USART3_Init 0 */
+
+  /* USER CODE BEGIN USART3_Init 1 */
+
+  /* USER CODE END USART3_Init 1 */
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART3_Init 2 */
+
+  /* USER CODE END USART3_Init 2 */
+
+}
+
+/**
   * @brief USART6 Initialization Function
   * @param None
   * @retval None
@@ -1169,22 +1205,22 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Porche_Pin
-                          |L_Tendedero_Pin|L_Garaje_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Cocina_Pin
+                          |L_Garaje_Pin|L_Tendedero_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LDR_Testigo_GPIO_Port, LDR_Testigo_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, DHT22_Pin|DHT11_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, DHT11_Pin|DHT22_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
+                          |L_Oficina_Pin|L_Derecha_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, L_Jardin_Pin|L_Oficina_Pin|L_Derecha_Pin|GPIO_PIN_3
-                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(L_Fregadero_GPIO_Port, L_Fregadero_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, L_Cocina_Pin|L_Recibidor_Pin|L_Ambiente_Pin|L_Comedor_Pin
-                          |L_Sala_Pin|Peltier_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
+                          |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : B_Stop_Pin Fin_Servo_Pin */
   GPIO_InitStruct.Pin = B_Stop_Pin|Fin_Servo_Pin;
@@ -1198,46 +1234,46 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : WiFi_OK_Pin DC_Salon_1_Pin DC_Salon_2_Pin L_Porche_Pin
-                           L_Tendedero_Pin L_Garaje_Pin */
-  GPIO_InitStruct.Pin = WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Porche_Pin
-                          |L_Tendedero_Pin|L_Garaje_Pin;
+  /*Configure GPIO pins : WiFi_OK_Pin DC_Salon_1_Pin DC_Salon_2_Pin L_Cocina_Pin
+                           L_Garaje_Pin L_Tendedero_Pin */
+  GPIO_InitStruct.Pin = WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Cocina_Pin
+                          |L_Garaje_Pin|L_Tendedero_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LDR_Testigo_Pin */
-  GPIO_InitStruct.Pin = LDR_Testigo_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LDR_Testigo_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : DHT11_Pin DHT22_Pin */
-  GPIO_InitStruct.Pin = DHT11_Pin|DHT22_Pin;
+  /*Configure GPIO pins : DHT22_Pin DHT11_Pin */
+  GPIO_InitStruct.Pin = DHT22_Pin|DHT11_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : L_Jardin_Pin L_Oficina_Pin L_Derecha_Pin PD3
-                           L_Domitorio_Pin L_Espejo_Pin L_Bano_Pin L_Fregadero_Pin */
-  GPIO_InitStruct.Pin = L_Jardin_Pin|L_Oficina_Pin|L_Derecha_Pin|GPIO_PIN_3
-                          |L_Domitorio_Pin|L_Espejo_Pin|L_Bano_Pin|L_Fregadero_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : L_Cocina_Pin L_Recibidor_Pin L_Ambiente_Pin L_Comedor_Pin
-                           L_Sala_Pin Peltier_Pin */
-  GPIO_InitStruct.Pin = L_Cocina_Pin|L_Recibidor_Pin|L_Ambiente_Pin|L_Comedor_Pin
-                          |L_Sala_Pin|Peltier_Pin;
+  /*Configure GPIO pins : Riego_Pin Peltier_Pin L_Espejo_Pin L_Izquierda_Pin
+                           L_Oficina_Pin L_Derecha_Pin */
+  GPIO_InitStruct.Pin = Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
+                          |L_Oficina_Pin|L_Derecha_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : L_Fregadero_Pin */
+  GPIO_InitStruct.Pin = L_Fregadero_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(L_Fregadero_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : L_Recibidor_Pin L_Comedor_Pin L_Jardin_Pin L_Sala_Pin
+                           L_Porche_Pin L_Ambiente_Pin L_Bano_Pin L_Dormitorio_Pin */
+  GPIO_InitStruct.Pin = L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
+                          |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
