@@ -1,12 +1,12 @@
 /*
- * ESP8266_HAL.c
+ * RGB.c
  *
  * Creado por Carmen Díez Almoguera, 2022
  *
  */
 
 
-#include <action.h>
+#include <RGB.h>
 
 int rgb_value(char i, char j, char k){
 

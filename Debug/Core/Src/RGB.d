@@ -1,5 +1,5 @@
-Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/RGB.h \
- ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+Core/Src/RGB.o: ../Core/Src/RGB.c ../Core/Inc/RGB.h ../Core/Inc/main.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -29,8 +29,7 @@ Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/RGB.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Core/Inc/UART_HAL.h ../Core/Inc/ESP8266_HAL.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 
 ../Core/Inc/RGB.h:
 
@@ -97,7 +96,3 @@ Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/RGB.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-
-../Core/Inc/UART_HAL.h:
-
-../Core/Inc/ESP8266_HAL.h:

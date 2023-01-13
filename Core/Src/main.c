@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ESP8266_HAL.h"
+#include "LDR.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -412,14 +413,21 @@ int main(void)
 		if(HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
 			LDR_valor = HAL_ADC_GetValue(&hadc1);
 
-		if(LDR_valor<90) {
-			luces_automat(1);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 1);
-		}
-		else {
-			luces_automat(0);
-			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, 0);
-		}
+		/*if (vIlum[26] == '1'){
+
+			if(LDR_valor<90) {
+				//vIlum[23] = '1';	// Jardín
+				//vIlum[24] = '1';	// Porche
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);	// Tendedero
+			}
+			else{
+				//vIlum[23] = '0';	// Jardín
+				//vIlum[24] = '0';	// Porche
+				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);	// Tendedero
+			}
+		}*/
+
+		ldr(LDR_valor);
 
 		// HW-390
 

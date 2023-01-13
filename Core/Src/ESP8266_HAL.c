@@ -6,11 +6,11 @@
  */
 
 
+#include <RGB.h>
 #include <UART_HAL.h>
 #include "ESP8266_HAL.h"
 #include "stdio.h"
 #include "string.h"
-#include "action.h"
 
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
@@ -327,6 +327,7 @@ void ESP_messageHandler(void){
 		vIlum[23] = textrc[85]; // Luz Jardín
 		vIlum[24] = textrc[88]; // Luz Porche
 		vIlum[25] = textrc[91]; // Luz Tendedero
+		vIlum[26] = textrc[94]; // Automático
 
 
 		if(vIlum[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET);

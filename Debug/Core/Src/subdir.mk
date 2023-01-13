@@ -6,8 +6,9 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../Core/Src/ESP8266_HAL.c \
+../Core/Src/LDR.c \
+../Core/Src/RGB.c \
 ../Core/Src/UART_HAL.c \
-../Core/Src/action.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f4xx_hal_msp.c \
 ../Core/Src/stm32f4xx_it.c \
@@ -17,8 +18,9 @@ C_SRCS += \
 
 OBJS += \
 ./Core/Src/ESP8266_HAL.o \
+./Core/Src/LDR.o \
+./Core/Src/RGB.o \
 ./Core/Src/UART_HAL.o \
-./Core/Src/action.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f4xx_hal_msp.o \
 ./Core/Src/stm32f4xx_it.o \
@@ -28,8 +30,9 @@ OBJS += \
 
 C_DEPS += \
 ./Core/Src/ESP8266_HAL.d \
+./Core/Src/LDR.d \
+./Core/Src/RGB.d \
 ./Core/Src/UART_HAL.d \
-./Core/Src/action.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f4xx_hal_msp.d \
 ./Core/Src/stm32f4xx_it.d \
