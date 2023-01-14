@@ -1,16 +1,16 @@
 /*
- * RGB.c
+ * LDR.c
  *
  * Creado por Carmen Díez Almoguera, 2022
  *
  */
 
-//#ifndef INC_RGB_H_
-//#define INC_RGB_H_
+//#ifndef INC_LDR_H_
+//#define INC_LDR_H_
 
 #include <stdlib.h>
 #include <string.h>
 #include "main.h"
 
 
-int rgb_value(char i, char j, char k);
+void ldr(uint16_t valor);

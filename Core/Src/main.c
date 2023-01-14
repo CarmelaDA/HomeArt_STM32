@@ -68,7 +68,6 @@ volatile int timbre = 0;
 volatile int stop = 0;
 volatile int interior = 0;
 volatile int exterior = 0;
-volatile int fin = 0;
 
 /*----------- Sensores -----------*/
 
@@ -109,8 +108,7 @@ static void MX_USART3_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
     if (GPIO_Pin==B_Timbre_Pin)
 	{
 		timbre = 1;
@@ -126,10 +124,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     if (GPIO_Pin==S_Ext_Pin)
     {
         exterior = 1;
-    }
-    if (GPIO_Pin==Fin_Servo_Pin)
-    {
-        fin = 1;
     }
 }
 
@@ -172,7 +166,7 @@ void play_Timbre(void){
 
 	uint8_t tone;
 
-	tone = 20;
+	tone = 25;
 	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
 	HAL_Delay(300);
@@ -333,66 +327,72 @@ int main(void)
 		}
 
 		// PUERTA PARCELA (90)
-		if(vVent[1]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
-		if(vVent[1]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
+		if(vVent[1]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
+		if(vVent[1]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
 
 		// PUERTA GARAJE (90)
-		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // más rápido a 30
-		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92);
+		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // más rápido a 30
+		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
 
 		// TOLDO TENDEDERO (90)
-		if(vExt[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 89);
-		if(vExt[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
-
-		// VENTANA SALÓN (96)
-		if(vVent[2]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 95);
+		/*if(vExt[0]=='1'){
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 96);
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+		}
+		if(vExt[0]=='0'){
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 89);
+			HAL_Delay(3000);
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+		}*/
+
+		// VENTANA SALÓN (90)
+		if(vVent[2]=='1') {
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 92);
+			HAL_Delay(3000);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
 		if(vVent[2]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 97);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 89);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 96);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
 		vVent[2]='x';
 
-		// VENTANA DORMITORIO (171)
+		// VENTANA DORMITORIO (90)
 		if(vVent[3]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 168);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 92);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 170);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
 		if(vVent[3]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 172);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 89);
 
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 170);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
 		vVent[3]='x';
 
-		// VENTANA OFICINA
+		// VENTANA OFICINA (90)
 		if(vVent[4]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 45);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 92);
 			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 135);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
 		if(vVent[4]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 100);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 89);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
 		vVent[4]='x';
 
 		// FINALES DE CARRERA
-		if(debouncer(&fin, Fin_Servo_GPIO_Port, Fin_Servo_Pin)){
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 1){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90); // S_Tendedero
 			vVent[0]='x'; // S_Parcela
 			vExt[4]='x'; // S_Parcela
 			vVent[1]='x'; // S_Garaje
-			vExt[0]='x'; // S_Tendedero
 		}
 
 		// VENTILADOR SALÓN
@@ -412,20 +412,6 @@ int main(void)
 
 		if(HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
 			LDR_valor = HAL_ADC_GetValue(&hadc1);
-
-		/*if (vIlum[26] == '1'){
-
-			if(LDR_valor<90) {
-				//vIlum[23] = '1';	// Jardín
-				//vIlum[24] = '1';	// Porche
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);	// Tendedero
-			}
-			else{
-				//vIlum[23] = '0';	// Jardín
-				//vIlum[24] = '0';	// Porche
-				HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);	// Tendedero
-			}
-		}*/
 
 		ldr(LDR_valor);
 
@@ -742,7 +728,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 96-1;
+  htim2.Init.Prescaler = 500-1;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 2000-1;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -809,7 +795,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 96-1;
+  htim3.Init.Prescaler = 500-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 2000-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -1230,14 +1216,14 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
                           |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : B_Stop_Pin Fin_Servo_Pin */
-  GPIO_InitStruct.Pin = B_Stop_Pin|Fin_Servo_Pin;
+  /*Configure GPIO pin : B_Stop_Pin */
+  GPIO_InitStruct.Pin = B_Stop_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+  HAL_GPIO_Init(B_Stop_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : S_Int_Pin B_Timbre_Pin S_Ext_Pin */
-  GPIO_InitStruct.Pin = S_Int_Pin|B_Timbre_Pin|S_Ext_Pin;
+  /*Configure GPIO pins : S_Int_Pin Fin_Servo_Pin S_Ext_Pin */
+  GPIO_InitStruct.Pin = S_Int_Pin|Fin_Servo_Pin|S_Ext_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -1282,6 +1268,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : B_Timbre_Pin */
+  GPIO_InitStruct.Pin = B_Timbre_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(B_Timbre_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);

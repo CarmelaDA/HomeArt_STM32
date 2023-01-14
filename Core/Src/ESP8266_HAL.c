@@ -431,20 +431,38 @@ void ESP_messageHandler(void){
 	// EXTERIOR
 	if (fragment[0] == 'e'){
 		UART_send("EXTERIOR\n", PC_UART);
-		vExt[0] = textrc[28]; 	// Toldo Tendedero
+		//vExt[0] = textrc[28]; 	// Toldo Tendedero
 		vExt[1] = textrc[31]; 	// Luz Tendedero
 		vExt[2] = textrc[34]; 	// Luz Porche
 		vExt[3] = textrc[37]; 	// Luz Jardín
-		vExt[4] = textrc[40]; 	// Puerta Parcela
+		//vExt[4] = textrc[40]; 	// Puerta Parcela
 
-		if(vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET); // Luz Tendedero
-		else if(vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+		if(vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); // Luz Tendedero
+		else if(vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 
-		if(vExt[2] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); // Luz Porche
-		else if(vExt[2] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		if(vExt[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET); // Luz Porche
+		else if(vExt[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
 
-		if(vExt[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); // Luz Jardín
-		else if(vExt[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		if(vExt[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET); // Luz Jardín
+		else if(vExt[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
+	}
+
+	if (fragment[0] == 'P'){
+			UART_send("EXTERIOR\n", PC_UART);
+			//vExt[0] = textrc[28]; 	// Toldo Tendedero
+			//vExt[1] = textrc[31]; 	// Luz Tendedero
+			//vExt[2] = textrc[34]; 	// Luz Porche
+			//vExt[3] = textrc[37]; 	// Luz Jardín
+			vExt[4] = textrc[40]; 	// Puerta Parcela
+	}
+
+	if (fragment[0] == 'R'){
+			UART_send("EXTERIOR\n", PC_UART);
+			vExt[0] = textrc[28]; 	// Toldo Tendedero
+			//vExt[1] = textrc[31]; 	// Luz Tendedero
+			//vExt[2] = textrc[34]; 	// Luz Porche
+			//vExt[3] = textrc[37]; 	// Luz Jardín
+			//vExt[4] = textrc[40]; 	// Puerta Parcela
 	}
 
 	// SALÓN
