@@ -1,3 +1,5 @@
+"./Core/Src/DHT11.o"
+"./Core/Src/DHT22.o"
 "./Core/Src/ESP8266_HAL.o"
 "./Core/Src/LDR.o"
 "./Core/Src/RGB.o"

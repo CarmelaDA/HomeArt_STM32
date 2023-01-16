@@ -26,6 +26,9 @@
 /* USER CODE BEGIN Includes */
 #include "ESP8266_HAL.h"
 #include "LDR.h"
+#include "DHT11.h"
+#include "DHT22.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -81,6 +84,16 @@ uint16_t Higro_real = 0;
 // Sensor de Lluvia
 uint16_t Lluvia_lectura = 0;
 uint16_t Lluvia_real = 0;
+
+// Sensor de Temperatura y Humedad del Aire (exterior, DHT11)
+DHT11_DataTypedef DHT11;
+volatile int TempAireExt = 0;
+volatile int HumeAireExt = 0;
+
+// Sensor de Temperatura y Humedad del Aire (interior, DHT22)
+DHT22_DataTypedef DHT22;
+volatile float TempAireInt = 0;
+volatile float HumeAireInt = 0;
 
 /* USER CODE END PV */
 
@@ -331,7 +344,7 @@ int main(void)
 		if(vVent[1]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
 
 		// PUERTA GARAJE (90)
-		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // más rápido a 30
+		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // más rápido a 30
 		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
 
 		// TOLDO TENDEDERO (90)
@@ -348,7 +361,7 @@ int main(void)
 
 		// VENTANA SALÓN (90)
 		if(vVent[2]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 92);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
@@ -375,19 +388,19 @@ int main(void)
 
 		// VENTANA OFICINA (90)
 		if(vVent[4]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 92);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
 		if(vVent[4]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 89);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
 		vVent[4]='x';
 
 		// FINALES DE CARRERA
-		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 1){
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
 			vVent[0]='x'; // S_Parcela
@@ -408,26 +421,36 @@ int main(void)
 		}
 
 		/*----------- Lectura Sensores -----------*/
-		// LDR
 
+		// LDR
 		if(HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
 			LDR_valor = HAL_ADC_GetValue(&hadc1);
 
 		ldr(LDR_valor);
 
-		// HW-390
+		// Lluvia
+		if(HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY) == HAL_OK)
+			Lluvia_lectura = HAL_ADC_GetValue(&hadc3);
 
+		Lluvia_real = 100 - ((100*Lluvia_lectura)/255);
+
+		// HW-390
 		if(HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
 			Higro_lectura = HAL_ADC_GetValue(&hadc2);
 
 		Higro_real = 100 - ((100*Higro_lectura)/255);
 
-		// Lluvia
+		// DHT11
+		/*DHT11_getData(&DHT11);
+	  	TempAireExt = DHT11.Temperature;
+	  	HumeAireExt = DHT11.Humidity;*/
 
-		if(HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY) == HAL_OK)
-			Lluvia_lectura = HAL_ADC_GetValue(&hadc3);
+	  	// DHT22
+	  	/*DHT22_getData(&DHT22);
+	  	TempAireInt = DHT22.Temperature;
+	  	HumeAireInt = DHT22.Humidity;*/
 
-		Lluvia_real = 100 - ((100*Lluvia_lectura)/255);
+
   }
   /* USER CODE END 3 */
 }

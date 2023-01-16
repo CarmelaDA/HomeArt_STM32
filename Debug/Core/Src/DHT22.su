@@ -1,0 +1,6 @@
+DHT22.c:18:6:DHT22_Set_Pin_Output	40	static
+DHT22.c:27:6:DHT22_Set_Pin_Input	40	static
+DHT22.c:36:6:DHT22_Start	8	static
+DHT22.c:49:9:DHT22_Check_Response	16	static
+DHT22.c:66:9:DHT22_Read	16	static
+DHT22.c:85:6:DHT22_getData	16	static
