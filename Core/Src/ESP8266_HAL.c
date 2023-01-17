@@ -400,23 +400,23 @@ void ESP_messageHandler(void){
 	// PUERTAS Y VENTANAS
 	if (fragment[0] == 'p'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA PARCELA)\n", PC_UART);
-		vVent[1] = textrc[28]; // Puerta Parcela
+		vVent[0] = textrc[28]; // P. Parcela
 	}
 	if (fragment[0] == 'g'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA GARAJE)\n", PC_UART);
-		vVent[0] = textrc[31]; // Puerta Garaje
+		vVent[1] = textrc[31]; // P. Garaje
 	}
 	if (fragment[0] == 'l'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA SALÓN)\n", PC_UART);
-		vVent[2] = textrc[34]; // Ventana Salón
+		vVent[2] = textrc[34]; // V. Salón
 	}
 	if (fragment[0] == 'd'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA DORMITORIO)\n", PC_UART);
-		vVent[3] = textrc[37]; // Ventana Dormitorio
+		vVent[3] = textrc[37]; // V. Dormitorio
 	}
 	if (fragment[0] == 'o'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA OFICINA)\n", PC_UART);
-		vVent[4] = textrc[40]; // Ventana Oficina
+		vVent[4] = textrc[40]; // V. Oficina
 	}
 
 	// TIEMPO
@@ -426,16 +426,20 @@ void ESP_messageHandler(void){
 		vTemp[1] = textrc[31]; 	// Vent. Dormitorio
 		vTemp[2] = textrc[34]; 	// Vent. Oficina
 		vTemp[4] = textrc[37]; 	// Calefacción
+
+		if(vTemp[4] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
+		else if(vTemp[4] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
     }
 
 	// EXTERIOR
 	if (fragment[0] == 'e'){
-		UART_send("EXTERIOR\n", PC_UART);
+		UART_send("LUCES (EXTERIOR)\n", PC_UART);
 		//vExt[0] = textrc[28]; 	// Toldo Tendedero
 		vExt[1] = textrc[31]; 	// Luz Tendedero
 		vExt[2] = textrc[34]; 	// Luz Porche
 		vExt[3] = textrc[37]; 	// Luz Jardín
 		//vExt[4] = textrc[40]; 	// Puerta Parcela
+		vExt[5] = textrc[43]; // Automático
 
 		if(vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); // Luz Tendedero
 		else if(vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
@@ -448,41 +452,163 @@ void ESP_messageHandler(void){
 	}
 
 	if (fragment[0] == 'P'){
-			UART_send("EXTERIOR\n", PC_UART);
-			//vExt[0] = textrc[28]; 	// Toldo Tendedero
-			//vExt[1] = textrc[31]; 	// Luz Tendedero
-			//vExt[2] = textrc[34]; 	// Luz Porche
-			//vExt[3] = textrc[37]; 	// Luz Jardín
-			vExt[4] = textrc[40]; 	// Puerta Parcela
+		UART_send("PARCELA (EXTERIOR)\n", PC_UART);
+		//vExt[0] = textrc[28]; 	// Toldo Tendedero
+		//vExt[1] = textrc[31]; 	// Luz Tendedero
+		//vExt[2] = textrc[34]; 	// Luz Porche
+		//vExt[3] = textrc[37]; 	// Luz Jardín
+		vExt[4] = textrc[40]; 	// Puerta Parcela
 	}
 
 	if (fragment[0] == 'R'){
-			UART_send("EXTERIOR\n", PC_UART);
-			vExt[0] = textrc[28]; 	// Toldo Tendedero
-			//vExt[1] = textrc[31]; 	// Luz Tendedero
-			//vExt[2] = textrc[34]; 	// Luz Porche
-			//vExt[3] = textrc[37]; 	// Luz Jardín
-			//vExt[4] = textrc[40]; 	// Puerta Parcela
+		UART_send("TENDEDERO (EXTERIOR)\n", PC_UART);
+		vExt[0] = textrc[28]; 	// Toldo Tendedero
+		//vExt[1] = textrc[31]; 	// Luz Tendedero
+		//vExt[2] = textrc[34]; 	// Luz Porche
+		//vExt[3] = textrc[37]; 	// Luz Jardín
+		//vExt[4] = textrc[40]; 	// Puerta Parcela
 	}
 
 	// SALÓN
 	if (fragment[0] == 'n'){
+		UART_send("SALON \n", PC_UART);
+		vSal[0] = textrc[28]; 	// Televisión
+		vSal[1] = textrc[31]; 	// Luz Sala
+		vSal[2] = textrc[34]; 	// Luz Comedor
+		vSal[3] = textrc[37]; 	// Luz Ambiente
+		vSal[4] = textrc[40]; 	// Luz Recibidor
+		//vSal[5] = textrc[43]; 	// V. Salón
+
+		if(vSal[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET); // Televisión
+		else if(vSal[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, SET);
+
+		if(vSal[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET); // Luz Sala
+		else if(vSal[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
+
+		if(vSal[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET); // Luz Comedor
+		else if(vSal[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
+
+		if(vSal[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET); // Luz Ambiente
+		else if(vSal[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
+
+		if(vSal[4] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); // Luz Recibidor
+		else if(vSal[5] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 	}
+
+	if (fragment[0] == 'N'){
+			UART_send("V. SALON (SALON) \n", PC_UART);
+			//vSal[0] = textrc[28]; 	// Televisión
+			//vSal[1] = textrc[31]; 	// Luz Sala
+			//vSal[2] = textrc[34]; 	// Luz Comedor
+			//vSal[3] = textrc[37]; 	// Luz Ambiente
+			//vSal[4] = textrc[40]; 	// Luz Recibidor
+			vSal[5] = textrc[43]; 	// V. Salón
+		}
 
 	// COCINA
 	if (fragment[0] == 'c'){
+		UART_send("COCINA \n", PC_UART);
+		vCoc[0] = textrc[28]; 	// Luz Cocina
+		vCoc[1] = textrc[31]; 	// Luz Fregadero
+
+		if(vCoc[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); // Luz Cocina
+		else if(vCoc[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+
+		if(vCoc[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET); // Luz Fregadero
+		else if(vCoc[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 	}
 
 	// BAÑO
 	if (fragment[0] == 'b'){
+		UART_send("BAÑO \n", PC_UART);
+		vBan[0] = textrc[28]; 	// Luz Baño
+		vBan[1] = textrc[31]; 	// Luz Espejo
+
+		if(vBan[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET); // Luz Baño
+		else if(vBan[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
+
+		if(vBan[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET); // Luz Espejo
+		else if(vBan[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
 	}
 
 	// DORMITORIO
 	if (fragment[0] == 'r'){
+		UART_send("LUCES (DORMITORIO) \n", PC_UART);
+		vDor[0] = textrc[28]; 	// Luz Dormitorio
+		vDor[1] = textrc[31]; 	// Luz Mesita Izq
+		vDor[2] = textrc[34]; 	// Luz Mesita Dch
+		//vDor[3] = textrc[37]; 	// V. Dormitorio
+
+		if(vDor[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET); // Luz Dormitorio
+		else if(vDor[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
+
+		if(vDor[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET); // Luz Mesita Izq
+		else if(vDor[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
+
+		if(vDor[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET); // Luz Mesita Dch
+		else if(vDor[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
+	}
+
+	if (fragment[0] == 'D'){
+		UART_send("V. DORMITORIO (DORMITORIO) \n", PC_UART);
+		//vDor[0] = textrc[28]; 	// Luz Dormitorio
+		//vDor[1] = textrc[31]; 	// Luz Mesita Izq
+		//vDor[2] = textrc[34]; 	// Luz Mesita Dch
+		vDor[3] = textrc[37]; 	// V. Dormitorio
 	}
 
 	// OFICINA
 	if (fragment[0] == 'f'){
+		UART_send("LUCES (OFICINA) \n", PC_UART);
+		vOfi[0] = textrc[28]; // Luz Oficina
+		vOfi[1] = textrc[31]; // Luz Gaming
+		vOfi[2] = textrc[34]; // Luz Rx100
+		vOfi[3] = textrc[37]; // Luz Rx10
+		vOfi[4] = textrc[40]; // Luz Rx1
+		vOfi[5] = textrc[43]; // Luz Gx100
+		vOfi[6] = textrc[46]; // Luz Gx10
+		vOfi[7] = textrc[49]; // Luz Gx1
+		vOfi[8] = textrc[52]; // Luz Bx100
+		vOfi[9] = textrc[55]; // Luz Bx10
+		vOfi[10] = textrc[58]; // Luz Bx1
+		//vOfi[11] = textrc[61]; // V. Oficina
+
+		if(vOfi[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET); // Luz Oficina
+		else if(vOfi[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
+
+		if(vOfi[1] == '0'){
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+		}
+		else if(vOfi[1] == '1'){ // Luz Gaming
+
+			//uint8_t r, g, b;
+
+			r = rgb_value (vOfi[2],vOfi[3],vOfi[4]);
+			g = rgb_value (vOfi[5],vOfi[6],vOfi[7]);
+			b = rgb_value (vOfi[8],vOfi[9],vOfi[10]);
+
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, g); // PA8
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, r); // PA9
+			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // PA10
+		}
+	}
+
+	if (fragment[0] == 'F'){
+		UART_send("V. OFICINA (OFICINA) \n", PC_UART);
+		//vOfi[0] = textrc[28]; // Luz Oficina
+		//vOfi[1] = textrc[31]; // Luz Gaming
+		//vOfi[2] = textrc[34]; // Luz Rx100
+		//vOfi[3] = textrc[37]; // Luz Rx10
+		//vOfi[4] = textrc[40]; // Luz Rx1
+		//vOfi[5] = textrc[43]; // Luz Gx100
+		//vOfi[6] = textrc[46]; // Luz Gx10
+		//vOfi[7] = textrc[49]; // Luz Gx1
+		//vOfi[8] = textrc[52]; // Luz Bx100
+		//vOfi[9] = textrc[55]; // Luz Bx10
+		//vOfi[10] = textrc[58]; // Luz Bx1
+		vOfi[11] = textrc[61]; // V. Oficina
 	}
 
 	// GARAJE

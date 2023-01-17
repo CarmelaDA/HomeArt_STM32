@@ -340,71 +340,96 @@ int main(void)
 		}
 
 		// PUERTA PARCELA (90)
-		if(vVent[1]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
-		if(vVent[1]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
+		if(vVent[0]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92);
+		if(vVent[0]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
 
 		// PUERTA GARAJE (90)
-		if(vVent[0]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // más rápido a 30
-		if(vVent[0]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
+		if(vVent[1]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // más rápido a 30
+		if(vVent[1]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
 
 		// TOLDO TENDEDERO (90)
-		/*if(vExt[0]=='1'){
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 92);
+		if(vExt[0]=='1'){
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
 		}
 		if(vExt[0]=='0'){
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 89);
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-		}*/
+		}
+		vExt[0]='x';
 
 		// VENTANA SALÓN (90)
-		if(vVent[2]=='1') {
+		if(vVent[2]=='1' || vSal[5]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
-		if(vVent[2]=='0') {
+		if(vVent[2]=='0'|| vSal[5]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 89);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
 		vVent[2]='x';
+		vSal[5]='x';
 
 		// VENTANA DORMITORIO (90)
-		if(vVent[3]=='1') {
+		if(vVent[3]=='1' || vDor[3]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 92);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
-		if(vVent[3]=='0') {
+		if(vVent[3]=='0' || vDor[3]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 89);
-
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
 		vVent[3]='x';
+		vDor[3]='x';
 
 		// VENTANA OFICINA (90)
-		if(vVent[4]=='1') {
+		if(vVent[4]=='1' || vOfi[11]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
-		if(vVent[4]=='0') {
+		if(vVent[4]=='0' || vOfi[11]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
 		vVent[4]='x';
+		vOfi[11]='x';
 
-		// FINALES DE CARRERA
-		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
+		// FINAL DE CARRERA PARCELA
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){ // cambiar a PE6
+
+			if (vVent[0]=='1' || vExt[4]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // S_Parcela
+				HAL_Delay(1000);
+			}
+			if (vVent[0]=='0' || vExt[4]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92); // S_Parcela
+				HAL_Delay(1000);
+			}
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
 			vVent[0]='x'; // S_Parcela
 			vExt[4]='x'; // S_Parcela
+		}
+
+		// FINAL DE CARRERA GARAJE
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
+
+			if (vVent[1]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // S_Garaje
+				HAL_Delay(1000);
+			}
+			if (vVent[1]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // S_Garaje
+				HAL_Delay(1000);
+			}
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
 			vVent[1]='x'; // S_Garaje
 		}
 
@@ -1230,7 +1255,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
-                          |L_Oficina_Pin|L_Derecha_Pin, GPIO_PIN_RESET);
+                          |L_Oficina_Pin|L_Derecha_Pin|L_TV_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(L_Fregadero_GPIO_Port, L_Fregadero_Pin, GPIO_PIN_RESET);
@@ -1239,14 +1264,14 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
                           |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : B_Stop_Pin */
-  GPIO_InitStruct.Pin = B_Stop_Pin;
+  /*Configure GPIO pins : B_Stop_Pin Fin_Garaje_Pin */
+  GPIO_InitStruct.Pin = B_Stop_Pin|Fin_Garaje_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B_Stop_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : S_Int_Pin Fin_Servo_Pin S_Ext_Pin */
-  GPIO_InitStruct.Pin = S_Int_Pin|Fin_Servo_Pin|S_Ext_Pin;
+  /*Configure GPIO pins : S_Int_Pin Fin_Parcela_Pin S_Ext_Pin */
+  GPIO_InitStruct.Pin = S_Int_Pin|Fin_Parcela_Pin|S_Ext_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
@@ -1268,9 +1293,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : Riego_Pin Peltier_Pin L_Espejo_Pin L_Izquierda_Pin
-                           L_Oficina_Pin L_Derecha_Pin */
+                           L_Oficina_Pin L_Derecha_Pin L_TV_Pin */
   GPIO_InitStruct.Pin = Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
-                          |L_Oficina_Pin|L_Derecha_Pin;
+                          |L_Oficina_Pin|L_Derecha_Pin|L_TV_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -1310,6 +1335,9 @@ static void MX_GPIO_Init(void)
 
   HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 

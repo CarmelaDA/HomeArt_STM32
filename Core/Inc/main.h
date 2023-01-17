@@ -65,9 +65,12 @@ void Error_Handler(void);
 #define S_Int_Pin GPIO_PIN_3
 #define S_Int_GPIO_Port GPIOE
 #define S_Int_EXTI_IRQn EXTI3_IRQn
-#define Fin_Servo_Pin GPIO_PIN_4
-#define Fin_Servo_GPIO_Port GPIOE
-#define Fin_Servo_EXTI_IRQn EXTI4_IRQn
+#define Fin_Parcela_Pin GPIO_PIN_4
+#define Fin_Parcela_GPIO_Port GPIOE
+#define Fin_Parcela_EXTI_IRQn EXTI4_IRQn
+#define Fin_Garaje_Pin GPIO_PIN_6
+#define Fin_Garaje_GPIO_Port GPIOE
+#define Fin_Garaje_EXTI_IRQn EXTI9_5_IRQn
 #define WiFi_OK_Pin GPIO_PIN_0
 #define WiFi_OK_GPIO_Port GPIOC
 #define Lluvia_Pin GPIO_PIN_1
@@ -140,6 +143,8 @@ void Error_Handler(void);
 #define L_Oficina_GPIO_Port GPIOB
 #define L_Derecha_Pin GPIO_PIN_6
 #define L_Derecha_GPIO_Port GPIOB
+#define L_TV_Pin GPIO_PIN_7
+#define L_TV_GPIO_Port GPIOB
 #define B_Timbre_Pin GPIO_PIN_0
 #define B_Timbre_GPIO_Port GPIOE
 #define B_Timbre_EXTI_IRQn EXTI0_IRQn
