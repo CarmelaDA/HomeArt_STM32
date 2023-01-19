@@ -28,6 +28,8 @@
 #include "LDR.h"
 #include "DHT11.h"
 #include "DHT22.h"
+#include "RH.h"
+#include "Temperatura.h"
 
 /* USER CODE END Includes */
 
@@ -71,6 +73,15 @@ volatile int timbre = 0;
 volatile int stop = 0;
 volatile int interior = 0;
 volatile int exterior = 0;
+
+volatile float v_enc = 0;
+volatile float v_apa = 0;
+volatile float c_enc = 0;
+volatile float c_apa = 0;
+
+volatile int rh_min = 0;
+volatile int rh_max = 0;
+
 
 /*----------- Sensores -----------*/
 
@@ -344,8 +355,8 @@ int main(void)
 		if(vVent[0]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
 
 		// PUERTA GARAJE (90)
-		if(vVent[1]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // más rápido a 30
-		if(vVent[1]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
+		if(vVent[1]=='1' || vGar[1] == '1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // más rápido a 30
+		if(vVent[1]=='0' || vGar[1] == '0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
 
 		// TOLDO TENDEDERO (90)
 		if(vExt[0]=='1'){
@@ -445,6 +456,16 @@ int main(void)
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5,GPIO_PIN_RESET);
 		}
 
+		// VALORES DE CONFIGURACIÓN
+
+		v_enc = temp_value(vAj[0], vAj[1], vAj[2]);
+		v_apa = temp_value(vAj[3], vAj[4], vAj[5]);
+		c_enc = temp_value(vAj[6], vAj[7], vAj[8]);
+		c_apa = temp_value(vAj[9], vAj[10], vAj[11]);
+
+		rh_min = rh_value(vAj[12], vAj[13]);
+		rh_max = rh_value(vAj[14], vAj[15]);
+
 		/*----------- Lectura Sensores -----------*/
 
 		// LDR
@@ -468,10 +489,10 @@ int main(void)
 		// DHT11
 		/*DHT11_getData(&DHT11);
 	  	TempAireExt = DHT11.Temperature;
-	  	HumeAireExt = DHT11.Humidity;*/
+	  	HumeAireExt = DHT11.Humidity;
 
 	  	// DHT22
-	  	/*DHT22_getData(&DHT22);
+	  	DHT22_getData(&DHT22);
 	  	TempAireInt = DHT22.Temperature;
 	  	HumeAireInt = DHT22.Humidity;*/
 

@@ -19,6 +19,9 @@ char vCoc[2];
 char vBan[2];
 char vDor[4];
 char vOfi[12];
+char vGar[2];
+char vHuer[1];
+char vAj[16];
 
 void ESP_Init (char *SSID, char *PASSWD);
 

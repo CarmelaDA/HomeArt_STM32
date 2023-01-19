@@ -10,6 +10,8 @@ C_SRCS += \
 ../Core/Src/ESP8266_HAL.c \
 ../Core/Src/LDR.c \
 ../Core/Src/RGB.c \
+../Core/Src/RH.c \
+../Core/Src/Temperatura.c \
 ../Core/Src/UART_HAL.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f4xx_hal_msp.c \
@@ -24,6 +26,8 @@ OBJS += \
 ./Core/Src/ESP8266_HAL.o \
 ./Core/Src/LDR.o \
 ./Core/Src/RGB.o \
+./Core/Src/RH.o \
+./Core/Src/Temperatura.o \
 ./Core/Src/UART_HAL.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f4xx_hal_msp.o \
@@ -38,6 +42,8 @@ C_DEPS += \
 ./Core/Src/ESP8266_HAL.d \
 ./Core/Src/LDR.d \
 ./Core/Src/RGB.d \
+./Core/Src/RH.d \
+./Core/Src/Temperatura.d \
 ./Core/Src/UART_HAL.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f4xx_hal_msp.d \
