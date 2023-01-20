@@ -103,8 +103,8 @@ volatile int HumeAireExt = 0;
 
 // Sensor de Temperatura y Humedad del Aire (interior, DHT22)
 DHT22_DataTypedef DHT22;
-volatile float TempAireInt = 0;
-volatile float HumeAireInt = 0;
+float TempAireInt = 0;
+float HumeAireInt = 0;
 
 /* USER CODE END PV */
 
@@ -486,17 +486,18 @@ int main(void)
 
 		Higro_real = 100 - ((100*Higro_lectura)/255);
 
-		// DHT11
-		/*DHT11_getData(&DHT11);
-	  	TempAireExt = DHT11.Temperature;
-	  	HumeAireExt = DHT11.Humidity;
+		//DHT22
+		if(actSensor == 1){
+			// DHT11
+			/*DHT11_getData(&DHT11);
+		  	TempAireExt = DHT11.Temperature;
+		  	HumeAireExt = DHT11.Humidity;*/
 
-	  	// DHT22
-	  	DHT22_getData(&DHT22);
-	  	TempAireInt = DHT22.Temperature;
-	  	HumeAireInt = DHT22.Humidity;*/
-
-
+		  	// DHT22 Interior
+		  	DHT22_getData(&DHT22);
+		  	TempAireInt = DHT22.Temperature;
+		  	HumeAireInt = DHT22.Humidity;
+		}
   }
   /* USER CODE END 3 */
 }

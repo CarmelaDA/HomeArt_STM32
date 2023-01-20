@@ -99,7 +99,5 @@ void DHT22_getData(DHT22_DataTypedef *DHT_Data){
 
 	  DHT_Data->Temperature = (float) (TEMP/10.0);
 	  DHT_Data->Humidity = (float) (RH/10.0);
-
-	  HAL_Delay(2500);
 }
 

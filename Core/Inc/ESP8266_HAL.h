@@ -22,6 +22,7 @@ char vOfi[12];
 char vGar[2];
 char vHuer[1];
 char vAj[16];
+int actSensor;
 
 void ESP_Init (char *SSID, char *PASSWD);
 

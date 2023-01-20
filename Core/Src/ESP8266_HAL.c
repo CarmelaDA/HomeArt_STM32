@@ -291,6 +291,11 @@ void ESP_messageHandler(void){
 	UART_send("\n", PC_UART);
 
 
+	// SENSORES DHT22
+	actSensor = 0;
+
+	if(textrc[27] == '[') actSensor = 1;
+
 	// SEGURIDAD
 	if (fragment[0] == 's'){
 		UART_send("SEGURIDAD \n", PC_UART);

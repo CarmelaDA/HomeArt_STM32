@@ -10,8 +10,8 @@
 
 typedef struct{
 
-	int Temperature;
-	int Humidity;
+	float Temperature;
+	float Humidity;
 
 }DHT22_DataTypedef;
 
