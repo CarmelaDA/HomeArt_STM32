@@ -13,14 +13,14 @@ char vSeg[2];
 char vIlum[27];
 char vVent[5];
 char vExt[6];
-char vTemp[4];
+char vTemp[5];
 char vSal[6];
 char vCoc[2];
 char vBan[2];
 char vDor[4];
 char vOfi[12];
 char vGar[2];
-char vHuer[1];
+char vHuer[2];
 char vAj[16];
 int actSensor;
 

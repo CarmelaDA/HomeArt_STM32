@@ -336,6 +336,7 @@ int main(void)
 
 		// TIMBRE
 		if (debouncer(&timbre, B_Timbre_GPIO_Port, B_Timbre_Pin)){
+
 			play_Timbre();
 		}
 
@@ -414,7 +415,7 @@ int main(void)
 		vOfi[11]='x';
 
 		// FINAL DE CARRERA PARCELA
-		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){ // cambiar a PE6
+		/*if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
 
 			if (vVent[0]=='1' || vExt[4]=='1'){
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // S_Parcela
@@ -427,21 +428,22 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
 			vVent[0]='x'; // S_Parcela
 			vExt[4]='x'; // S_Parcela
-		}
+		}*/
 
 		// FINAL DE CARRERA GARAJE
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
 
-			if (vVent[1]=='1'){
+			if (vVent[1]=='1' || vGar[1]=='1'){
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // S_Garaje
 				HAL_Delay(1000);
 			}
-			if (vVent[1]=='0'){
+			if (vVent[1]=='0' || vGar[1]=='0'){
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 91); // S_Garaje
 				HAL_Delay(1000);
 			}
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
 			vVent[1]='x'; // S_Garaje
+			vGar[1]='x'; // S_Garaje
 		}
 
 		// VENTILADOR SALÓN
@@ -486,6 +488,14 @@ int main(void)
 
 		Higro_real = 100 - ((100*Higro_lectura)/255);
 
+		/*if(vHuer[1] == '1'){
+			// Si está apagado y no llega al mínimo o está encendido y no llega al máximo
+			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Higro_real<rh_min)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Higro_real<rh_max))){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET); // Riego
+			}
+			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Riego
+		}*/
+
 		//DHT22
 		if(actSensor == 1){
 			// DHT11
@@ -497,6 +507,14 @@ int main(void)
 		  	DHT22_getData(&DHT22);
 		  	TempAireInt = DHT22.Temperature;
 		  	HumeAireInt = DHT22.Humidity;
+		}
+
+		if(vTemp[4] == '1'){
+			// Si está apagado y no llega al mínimo o está encendido y no llega al máximo
+			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempAireInt<c_enc)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempAireInt<c_apa))){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); // Calefacción
+			}
+			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
 		}
   }
   /* USER CODE END 3 */
@@ -926,7 +944,6 @@ static void MX_TIM4_Init(void)
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
-  TIM_OC_InitTypeDef sConfigOC = {0};
 
   /* USER CODE BEGIN TIM4_Init 1 */
 
@@ -946,28 +963,15 @@ static void MX_TIM4_Init(void)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 0;
-  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
-  {
-    Error_Handler();
-  }
   /* USER CODE BEGIN TIM4_Init 2 */
 
   /* USER CODE END TIM4_Init 2 */
-  HAL_TIM_MspPostInit(&htim4);
 
 }
 

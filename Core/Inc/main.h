@@ -99,8 +99,6 @@ void Error_Handler(void);
 #define Riego_GPIO_Port GPIOB
 #define Peltier_Pin GPIO_PIN_15
 #define Peltier_GPIO_Port GPIOB
-#define Z_Timbre_Pin GPIO_PIN_12
-#define Z_Timbre_GPIO_Port GPIOD
 #define S_Oficina_Pin GPIO_PIN_8
 #define S_Oficina_GPIO_Port GPIOC
 #define S_Salon_Pin GPIO_PIN_9

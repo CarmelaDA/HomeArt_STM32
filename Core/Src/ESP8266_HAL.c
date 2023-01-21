@@ -430,10 +430,13 @@ void ESP_messageHandler(void){
 		vTemp[0] = textrc[28]; 	// Vent. Salón
 		vTemp[1] = textrc[31]; 	// Vent. Dormitorio
 		vTemp[2] = textrc[34]; 	// Vent. Oficina
-		vTemp[4] = textrc[37]; 	// Calefacción
+		vTemp[3] = textrc[37]; 	// Calefacción
+		vTemp[4] = textrc[40]; 	// Automático
 
-		if(vTemp[4] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
-		else if(vTemp[4] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
+		if(vTemp[4] == '0'){
+			if(vTemp[3] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
+			else if(vTemp[3] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
+		}
     }
 
 	// EXTERIOR
@@ -636,9 +639,12 @@ void ESP_messageHandler(void){
 	if (fragment[0] == 'h'){
 		UART_send("RIEGO HUERTO \n", PC_UART);
 		vHuer[0] = textrc[28]; // Riego
+		vHuer[1] = textrc[31]; // Automático
 
-		if(vHuer[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Riego
-		else if(vHuer[0] == '1') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET);
+		/*if(vHuer[1] == '0'){
+			if(vHuer[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Riego
+			else if(vHuer[0] == '1') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET);
+		}*/
 	}
 
 	// AJUSTES
