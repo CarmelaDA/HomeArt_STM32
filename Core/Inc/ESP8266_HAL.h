@@ -12,7 +12,7 @@
 char vSeg[2];
 char vIlum[27];
 char vVent[5];
-char vExt[6];
+char vExt[7];
 char vTemp[5];
 char vSal[6];
 char vCoc[2];

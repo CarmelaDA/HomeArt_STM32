@@ -82,6 +82,8 @@ volatile float c_apa = 0;
 volatile int rh_min = 0;
 volatile int rh_max = 0;
 
+volatile int toldo = 0; // 1=abierto 0=cerrado
+
 
 /*----------- Sensores -----------*/
 
@@ -364,11 +366,13 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+			toldo = 1;
 		}
 		if(vExt[0]=='0'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+			toldo = 0;
 		}
 		vExt[0]='x';
 
@@ -415,7 +419,7 @@ int main(void)
 		vOfi[11]='x';
 
 		// FINAL DE CARRERA PARCELA
-		/*if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
 
 			if (vVent[0]=='1' || vExt[4]=='1'){
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // S_Parcela
@@ -428,7 +432,7 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
 			vVent[0]='x'; // S_Parcela
 			vExt[4]='x'; // S_Parcela
-		}*/
+		}
 
 		// FINAL DE CARRERA GARAJE
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
@@ -481,6 +485,34 @@ int main(void)
 			Lluvia_lectura = HAL_ADC_GetValue(&hadc3);
 
 		Lluvia_real = 100 - ((100*Lluvia_lectura)/255);
+
+		if(vExt[5] == '1'){
+			// Si hay ropa tendida y llueve (con tendedero cerrado)
+			if (Lluvia_real>5 && vExt[6] == '1' && toldo == 0){
+
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91); // Abrir tendedero
+				HAL_Delay(3000);
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+				toldo = 1;
+			}
+
+			// Si hay ropa tendida y llueve (con tendedero abierto)
+			// Si no hay ropa tendida y llueve (con tendedero cerrado)
+
+			// Si no hay ropa tendida y llueve (con tendedero abierto)
+			else if (Lluvia_real>5 && vExt[6] == '0' && toldo == 1){
+
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88); // Cerrar tendedero
+				HAL_Delay(3000);
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
+				toldo = 0;
+			}
+
+			// Si hay ropa tendida y no llueve (da igual el tendedero)
+			// Si hay no hay ropa tendida y no llueve (da igual el tendedero)
+
+			vExt[0]='x';
+		}
 
 		// HW-390
 		if(HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)

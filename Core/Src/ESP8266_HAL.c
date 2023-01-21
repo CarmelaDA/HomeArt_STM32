@@ -448,6 +448,7 @@ void ESP_messageHandler(void){
 		vExt[3] = textrc[37]; 	// Luz Jardín
 		//vExt[4] = textrc[40]; 	// Puerta Parcela
 		vExt[5] = textrc[43]; // Automático
+		vExt[6] = textrc[46]; // Ropa tendida
 
 		if(vIlum[25] == '0' || vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); // Luz Tendedero
 		else if(vIlum[25] == '1' || vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);

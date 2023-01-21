@@ -12,7 +12,7 @@
 void ldr(uint16_t valor){
 
 
-	if (vIlum[26] == '1' || vExt[5] == '1'){
+	if (vIlum[26] == '1'){
 
 		if(valor<90) {
 			vIlum[23] = 'x';	// Jardín
