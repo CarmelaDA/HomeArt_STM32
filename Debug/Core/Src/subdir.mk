@@ -9,8 +9,10 @@ C_SRCS += \
 ../Core/Src/DHT22.c \
 ../Core/Src/ESP8266_HAL.c \
 ../Core/Src/LDR.c \
+../Core/Src/RFID.c \
 ../Core/Src/RGB.c \
 ../Core/Src/RH.c \
+../Core/Src/SG90.c \
 ../Core/Src/Temperatura.c \
 ../Core/Src/UART_HAL.c \
 ../Core/Src/main.c \
@@ -25,8 +27,10 @@ OBJS += \
 ./Core/Src/DHT22.o \
 ./Core/Src/ESP8266_HAL.o \
 ./Core/Src/LDR.o \
+./Core/Src/RFID.o \
 ./Core/Src/RGB.o \
 ./Core/Src/RH.o \
+./Core/Src/SG90.o \
 ./Core/Src/Temperatura.o \
 ./Core/Src/UART_HAL.o \
 ./Core/Src/main.o \
@@ -41,8 +45,10 @@ C_DEPS += \
 ./Core/Src/DHT22.d \
 ./Core/Src/ESP8266_HAL.d \
 ./Core/Src/LDR.d \
+./Core/Src/RFID.d \
 ./Core/Src/RGB.d \
 ./Core/Src/RH.d \
+./Core/Src/SG90.d \
 ./Core/Src/Temperatura.d \
 ./Core/Src/UART_HAL.d \
 ./Core/Src/main.d \

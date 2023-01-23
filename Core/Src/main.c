@@ -29,6 +29,8 @@
 #include "DHT11.h"
 #include "DHT22.h"
 #include "RH.h"
+#include "RFID.h"
+#include "SG90.h"
 #include "Temperatura.h"
 
 /* USER CODE END Includes */
@@ -187,8 +189,7 @@ int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_n
 	return 0;
 }
 
-
-void play_Timbre(void){
+void playTimbre(){
 
 	uint8_t tone;
 
@@ -206,7 +207,7 @@ void play_Timbre(void){
 }
 
 
-void play_Alarma(){
+void playAlarma(){
 
 	uint8_t tone;
 
@@ -337,9 +338,12 @@ int main(void)
 	  	ESP_messageHandler();
 
 		// TIMBRE
-		if (debouncer(&timbre, B_Timbre_GPIO_Port, B_Timbre_Pin)){
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) == 0){
 
-			play_Timbre();
+			if(readLector()){
+				//actParcelaRFID();
+			}
+			else playTimbre();
 		}
 
 		// STOP ALARMA
@@ -347,10 +351,10 @@ int main(void)
 
 		// ALARMA
 		if (debouncer(&interior, S_Int_GPIO_Port, S_Int_Pin)){
-			if(vSeg[0] == '1') play_Alarma();
+			if(vSeg[0] == '1') playAlarma();
 		}
 		if (debouncer(&exterior, S_Ext_GPIO_Port, S_Ext_Pin)){
-			if(vSeg[1] == '1') play_Alarma();
+			if(vSeg[1] == '1') playAlarma();
 		}
 
 		// PUERTA PARCELA (90)
@@ -1270,7 +1274,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;
+  huart6.Init.BaudRate = 9600;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
