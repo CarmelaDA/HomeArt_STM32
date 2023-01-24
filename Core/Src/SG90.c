@@ -10,26 +10,27 @@
 #include "ESP8266_HAL.h"
 
 extern TIM_HandleTypeDef htim2;
+extern UART_HandleTypeDef huart6;
 
 void actParcelaRFID(){
 
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92); // Abrir S_Parcela
+	char aqui[5]= "aqui\n";
+	HAL_UART_Transmit(&huart6, (uint8_t *) aqui, 5, HAL_MAX_DELAY);
 
-	if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Rebote
-		HAL_Delay(1000);
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
-	}
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Abrir S_Parcela
+
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Rebote
+	HAL_Delay(1000);
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
 
 	HAL_Delay(5000);
 
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Cerrar S_Parcela
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Cerrar S_Parcela
 
-	if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 92); // Rebote
-		HAL_Delay(1000);
-		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
-	}
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Rebote
+	HAL_Delay(1000);
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
+
 }
 
 

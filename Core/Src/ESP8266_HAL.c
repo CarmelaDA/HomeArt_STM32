@@ -281,20 +281,23 @@ void ESP_messageHandler(void){
 
 	memset(textrc, 0, 100);
 
-	HAL_UART_Receive(&huart2, (uint8_t *)textrc, 100, 100); //(uint8_t *)
+	if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) != 0){
 
-	HAL_UART_Transmit(&huart6, (uint8_t *)textrc, 100, HAL_MAX_DELAY);
-	UART_send("\n", PC_UART);
+		HAL_UART_Receive(&huart2, (uint8_t *)textrc, 100, 100); //(uint8_t *)
 
-	fragment[0] = textrc[25]; // Asignación de Fragmento
-	HAL_UART_Transmit(&huart6, (uint8_t *)fragment, 1, HAL_MAX_DELAY);
-	UART_send("\n", PC_UART);
+		HAL_UART_Transmit(&huart6, (uint8_t *)textrc, 100, HAL_MAX_DELAY);
+		UART_send("\n", PC_UART);
+
+		fragment[0] = textrc[25]; // Asignación de Fragmento
+		HAL_UART_Transmit(&huart6, (uint8_t *)fragment, 1, HAL_MAX_DELAY);
+		UART_send("\n", PC_UART);
+	}
 
 
 	// SENSORES DHT22
-	actSensor = 0;
+	readDHT = 0;
 
-	if(textrc[27] == '[') actSensor = 1;
+	if(textrc[27] == '[') readDHT = 1;
 
 	// SEGURIDAD
 	if (fragment[0] == 's'){

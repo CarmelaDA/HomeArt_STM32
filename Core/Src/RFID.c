@@ -14,22 +14,23 @@ extern UART_HandleTypeDef huart6;
 
 int readLector(){
 
-	  char textrc[16] = "";
+	  char vehicle[16] = "";
 
 	  char coche[3] = "247";
 	  char moto[3] = "355";
 
 	  int familia = 0;
 
-	  for(int i=0; i<16; i++) textrc[i] = ' ';
+	  for(int i=0; i<16; i++) vehicle[i] = '_';
 
-	  HAL_UART_Receive(&huart3, (uint8_t *) textrc, 16, 100);
-	  HAL_UART_Transmit(&huart6, (uint8_t *) textrc, 16, HAL_MAX_DELAY);
+	  HAL_UART_Receive(&huart3, (uint8_t *) vehicle, 16, 100);
 
-	  if(textrc[16] != ' '){
+	  if (vehicle[15] == '_') return 2;
+
+	  else {
 		  for(int i = 0; i<3; i++){
 			  familia = 1;
-			  if(textrc[i+13] != coche[i]){
+			  if(vehicle[i+13] != coche[i]){
 				  familia = 0;
 				  i = 2;
 			  }
@@ -38,7 +39,7 @@ int readLector(){
 		  if(!familia){
 			  for(int i = 0; i<3; i++){
 				  familia = 1;
-				  if(textrc[13+i] != moto[i]){
+				  if(vehicle[13+i] != moto[i]){
 					  familia = 0;
 					  i = 2;
 				  }
@@ -46,11 +47,7 @@ int readLector(){
 		  }
 	  }
 
-	  if(textrc[15] != ' '){
-		  if(familia) return 1;
-		  else return 0;
-	  }
-	  else return 0;
+	  return familia;
 }
 
 
