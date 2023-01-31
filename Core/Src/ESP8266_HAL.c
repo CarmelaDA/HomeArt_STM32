@@ -30,6 +30,7 @@ uint8_t pin = 0;
 //int position = 0;
 
 char textrc[110];
+char dataSTM[1];
 char fragment[1];
 
 
@@ -297,7 +298,10 @@ void ESP_messageHandler(void){
 	// SENSORES DHT22
 	readDHT = 0;
 
-	if(textrc[27] == '[') readDHT = 1;
+	if(textrc[27] == '['){
+		ESP_dataHandler();
+		readDHT = 1;
+	}
 
 	// SEGURIDAD
 	if (fragment[0] == 's'){
@@ -673,4 +677,24 @@ void ESP_messageHandler(void){
 	}
 
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+}
+
+void ESP_dataHandler(void){
+
+	memset(dataSTM, 0, 0);
+
+	dataSTM[0] = 'X';
+
+	if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) != 0){
+
+		HAL_UART_Transmit(&huart2, (uint8_t *)dataSTM, 1, HAL_MAX_DELAY); //(uint8_t *)
+
+		HAL_UART_Transmit(&huart6, (uint8_t *)dataSTM, 1, HAL_MAX_DELAY);
+		UART_send("\n", PC_UART);
+
+		/*fragment[0] = textrc[25]; // Asignación de Fragmento
+		HAL_UART_Transmit(&huart6, (uint8_t *)fragment, 1, HAL_MAX_DELAY);
+		UART_send("\n", PC_UART);*/
+	}
+
 }
