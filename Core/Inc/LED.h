@@ -14,3 +14,5 @@
 
 
 int rgb_value(char i, char j, char k);
+
+void luces_automat(int i);

@@ -24,14 +24,15 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "Buzzer.h"
+#include "DHT22.h"
 #include "ESP8266_HAL.h"
 #include "LDR.h"
-#include "DHT11.h"
-#include "DHT22.h"
-#include "RH.h"
+#include "LED.h"
 #include "RFID.h"
+#include "RH.h"
 #include "SG90.h"
-#include "Temperatura.h"
+#include "Temperature.h"
 
 /* USER CODE END Includes */
 
@@ -71,44 +72,52 @@ UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
 
-volatile int timbre = 0;
+volatile int doorbell = 0;
 volatile int stop = 0;
-volatile int interior = 0;
-volatile int exterior = 0;
+volatile int inside = 0;
+volatile int outside = 0;
 
-volatile float v_enc = 0;
-volatile float v_apa = 0;
-volatile float c_enc = 0;
-volatile float c_apa = 0;
+volatile float f_on = 0; 		// Fan ON
+volatile float f_off = 0; 		// Fan OFF
+volatile float h_on = 0; 		// Heat ON
+volatile float h_off = 0; 		// Heat OFF
 
 volatile int rh_min = 0;
 volatile int rh_max = 0;
 
-volatile int toldo = 0; // 1=abierto 0=cerrado
+volatile int awning = 0; 		// 1=unfolded 	0=folded
+volatile int parcel = 0; 		// 1=opened 	0=closed
+volatile int garage = 0; 		// 1=opened 	0=closed
+volatile int office = 0; 		// 1=up 		0=down
+volatile int bedroom = 0; 		// 1=up 		0=down
+
+volatile int water = 0; 		// 1=on 		0=off
+volatile int fan = 0; 			// 1=on 		0=off
+volatile int heat = 0; 			// 1=on 		0=off
 
 
-/*----------- Sensores -----------*/
+/*----------- Sensors -----------*/
 
-// Sensor de Luminosidad (LDR)
-uint16_t LDR_valor = 0;
+// Brightness Sensor (LDR)
+uint16_t LDR_value = 0;
 
-// Higrómetro (HW-390)
-uint16_t Higro_lectura = 0;
-uint16_t Higro_real = 0;
+// Hygrometer (HW-390)
+uint16_t Hygro_read = 0;
+uint16_t Hygro = 0;
 
-// Sensor de Lluvia
-uint16_t Lluvia_lectura = 0;
-uint16_t Lluvia_real = 0;
+// Rain Sensor
+uint16_t Rain_read = 0;
+uint16_t Rain = 0;
 
-// Sensor de Temperatura y Humedad del Aire (exterior, sin decimal, DHT22)
-DHT22_DataTypedef DHT22_int;
-int TempAireExt = 0;
-int HumeAireExt = 0;
+// Humidity and Temperature Sensor (outside, units, DHT22)
+DHT22_DataTypedef DHT22_outside;
+int TempOutside = 0;
+int RHOutside = 0;
 
-// Sensor de Temperatura y Humedad del Aire (interior, con decimal, DHT22)
-DHT22_DataTypedef DHT22_ext;
-float TempAireInt = 0;
-float HumeAireInt = 0;
+// Humidity and Temperature Sensor (inside, decimals, DHT22)
+DHT22_DataTypedef DHT22_inside;
+float TempInside = 0;
+float RHInside = 0;
 
 /* USER CODE END PV */
 
@@ -140,16 +149,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
     if (GPIO_Pin==S_Int_Pin)
     {
-        interior = 1;
+        inside = 1;
     }
     if (GPIO_Pin==S_Ext_Pin)
     {
-        exterior = 1;
+        outside = 1;
     }
 }
 
-int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_number) // Control de los rebotes
-{
+int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_number){ // Bounce Control
+
 	static uint8_t button_count=0;
 	static int counter=0;
 
@@ -171,7 +180,7 @@ int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_n
 			{
 				button_count++;
 			}
-			if (button_count==4 ) // Periodo antirebotes
+			if (button_count==4 ) // Debounce Period
 			{
 				button_count=0;
 				*button_int=0;
@@ -182,60 +191,8 @@ int debouncer(volatile int* button_int, GPIO_TypeDef* GPIO_port, uint16_t GPIO_n
 	return 0;
 }
 
-void playTimbre(){
 
-	uint8_t tone;
-
-	tone = 25;
-	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-	HAL_Delay(300);
-
-	tone = 40;
-	__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-	HAL_Delay(800);
-
-	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
-}
-
-
-void playAlarma(){
-
-	uint8_t tone;
-
-	for(tone = 40; tone >= 10; tone = tone-10){
-		__HAL_TIM_SET_AUTORELOAD(&htim4, tone*2);
-		__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, tone);
-		HAL_Delay(300);
-	}
-
-	__HAL_TIM_SET_AUTORELOAD(&htim4, 80);
-	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 40);
-}
-
-void luces_automat(int i){
-
-	if(i){
-		//vIlum[23]='1';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
-		//vIlum[24]='1';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
-		//vIlum[25]='1';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
-	}
-	else{
-		//vIlum[23]='0';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET);
-		//vIlum[24]='0';
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET);
-		//vIlum[25]='0';
-		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
-	}
-}
-
-
-/*----------- Delay en Microsegundos -----------*/
+/*----------- Delay (ms) -----------*/
 void delay(uint16_t time){
 
 	__HAL_TIM_SET_COUNTER(&htim6,0);
@@ -288,28 +245,36 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  // LED RGB Gaming
+  // RGB Gaming LED
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  // Servo Parcela
+
+  // Parcel Servo
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-  // Servo Garaje
+
+  // Garage Servo
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
-  // Servo Tendedero
+
+  // Swning Servo
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
-  // Servo Salón
+
+  // Living Room Servo
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
-  // Servo Dormitorio
+
+  // Bedroom Servo
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-  // Servo Oficina
+
+  // Office Servo
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
-  // DC Salón
+
+  // Living Room DC Motor
   HAL_TIM_PWM_Start(&htim9, TIM_CHANNEL_1);
-  // Zumbador
+
+  // Buzzer
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 
-  /*----------- Útil para Sensor DHT11/22 -----------*/
+  /*----------- DHT22 Sensor-----------*/ //______________________________________________________________________________________________AQUÍ
   HAL_TIM_Base_Start(&htim6);
 
   /*----------- Inicialización LDR & HW390 & Lluvia -----------*/
@@ -333,7 +298,7 @@ int main(void)
 
 	  	ESP_messageHandler();
 
-		// TIMBRE VEHÍCULO
+		// TIMBRE VEHICULO
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) == 0){
 
 			int known = readLector();
@@ -353,19 +318,23 @@ int main(void)
 
 		// TIMBRE PEATÓN
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0){
+
 				playTimbre();
 		}
 
 		// STOP ALARMA
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0){
+
 			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 		}
 
 		// ALARMA
-		if (debouncer(&interior, S_Int_GPIO_Port, S_Int_Pin)){
+		if (debouncer(&inside, S_Int_GPIO_Port, S_Int_Pin)){
+
 			if(vSeg[0] == '1') playAlarma();
 		}
-		if (debouncer(&exterior, S_Ext_GPIO_Port, S_Ext_Pin)){
+		if (debouncer(&outside, S_Ext_GPIO_Port, S_Ext_Pin)){
+
 			if(vSeg[1] == '1') playAlarma();
 		}
 
@@ -382,7 +351,7 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-			toldo = 1;
+			awning = 1;
 		}
 		if(vExt[0]=='0'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
@@ -480,9 +449,9 @@ int main(void)
 
 		// VALORES DE CONFIGURACIÓN
 		v_enc = temp_value(vAj[0], vAj[1], vAj[2]);
-		v_apa = temp_value(vAj[3], vAj[4], vAj[5]);
-		c_enc = temp_value(vAj[6], vAj[7], vAj[8]);
-		c_apa = temp_value(vAj[9], vAj[10], vAj[11]);
+		f_off = temp_value(vAj[3], vAj[4], vAj[5]);
+		h_on = temp_value(vAj[6], vAj[7], vAj[8]);
+		h_off = temp_value(vAj[9], vAj[10], vAj[11]);
 
 		rh_min = rh_value(vAj[12], vAj[13]);
 		rh_max = rh_value(vAj[14], vAj[15]);
@@ -492,19 +461,19 @@ int main(void)
 
 		// LDR
 		if(HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
-			LDR_valor = HAL_ADC_GetValue(&hadc1);
+			LDR_value = HAL_ADC_GetValue(&hadc1);
 
-		ldr(LDR_valor);
+		ldr(LDR_value);
 
 		// Lluvia
 		if(HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY) == HAL_OK)
-			Lluvia_lectura = HAL_ADC_GetValue(&hadc3);
+			Rain_read = HAL_ADC_GetValue(&hadc3);
 
-		Lluvia_real = 100 - ((100*Lluvia_lectura)/255);
+		Rain = 100 - ((100*Rain_read)/255);
 
 		if(vExt[5] == '1'){
 			// Si hay ropa tendida y llueve (con tendedero cerrado)
-			if (Lluvia_real>5 && vExt[6] == '1' && toldo == 0){
+			if (Lluvia_real>5 && vExt[6] == '1' && awning == 0){
 
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91); // Abrir tendedero
 				HAL_Delay(3000);
@@ -516,7 +485,7 @@ int main(void)
 			// Si no hay ropa tendida y llueve (con tendedero cerrado)
 
 			// Si no hay ropa tendida y llueve (con tendedero abierto)
-			else if (Lluvia_real>5 && vExt[6] == '0' && toldo == 1){
+			else if (Lluvia_real>5 && vExt[6] == '0' && awning == 1){
 
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88); // Cerrar tendedero
 				HAL_Delay(3000);
@@ -532,9 +501,9 @@ int main(void)
 
 		// HW-390
 		if(HAL_ADC_PollForConversion(&hadc2, HAL_MAX_DELAY) == HAL_OK)
-			Higro_lectura = HAL_ADC_GetValue(&hadc2);
+			Hygro_read = HAL_ADC_GetValue(&hadc2);
 
-		Higro_real = 100 - ((100*Higro_lectura)/255);
+		Hygro = 100 - ((100*Hygro_read)/255);
 
 		/*if(vHuer[1] == '1'){
 			// Si está apagado y no llega al mínimo o está encendido y no llega al máximo
@@ -548,14 +517,14 @@ int main(void)
 		if(readDHT == 1){
 
 			// Exterior
-			DHT22_getData(&DHT22_ext);
-		  	TempAireExt = DHT22_ext.Temperature;
-		  	HumeAireExt = DHT22_ext.Humidity;
+			DHT22_getData(&DHT22_inside);
+		  	TempOutside = DHT22_inside.Temperature;
+		  	RHOutside = DHT22_inside.Humidity;
 
 		  	// Interior
-		  	DHT22_getData(&DHT22_int);
-		  	TempAireInt = DHT22_int.Temperature;
-		  	HumeAireInt = DHT22_int.Humidity;
+		  	DHT22_getData(&DHT22_inside);
+		  	TempAireInt = DHT22_inside.Temperature;
+		  	RHInside = DHT22_inside.Humidity;
 
 		  	readDHT = 0;
 		}
@@ -568,7 +537,7 @@ int main(void)
 			else HAL_GPIO_WritePin(GPIOX, GPIO_PIN_X, RESET); // Ventilador Salón*/
 
 			// Si la calefacción está apagada y no llega al mínimo o está encendida y no llega al máximo
-			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempAireInt<c_enc)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempAireInt<c_apa))){
+			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempInside<h_on)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempInside<h_off))){
 				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); // Calefacción
 			}
 			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
@@ -1309,7 +1278,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 9600;
+  huart6.Init.BaudRate = 115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
@@ -1361,23 +1330,23 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
                           |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : B_Stop_Pin Fin_Garaje_Pin */
-  GPIO_InitStruct.Pin = B_Stop_Pin|Fin_Garaje_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
   /*Configure GPIO pins : S_Int_Pin Fin_Parcela_Pin S_Ext_Pin */
   GPIO_InitStruct.Pin = S_Int_Pin|Fin_Parcela_Pin|S_Ext_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : B_Tim_Pers_Pin */
-  GPIO_InitStruct.Pin = B_Tim_Pers_Pin;
+  /*Configure GPIO pin : Fin_Garaje_Pin */
+  GPIO_InitStruct.Pin = Fin_Garaje_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B_Tim_Pers_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Fin_Garaje_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : B_Tim_Pers_Pin B_Stop_Pin */
+  GPIO_InitStruct.Pin = B_Tim_Pers_Pin|B_Stop_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : WiFi_OK_Pin DC_Salon_1_Pin DC_Salon_2_Pin L_Cocina_Pin
                            L_Garaje_Pin L_Tendedero_Pin */
@@ -1441,6 +1410,9 @@ static void MX_GPIO_Init(void)
 
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 
 }
 

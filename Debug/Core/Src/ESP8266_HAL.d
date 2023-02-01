@@ -1,4 +1,4 @@
-Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/RGB.h \
+Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/LED.h \
  ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -32,7 +32,7 @@ Core/Src/ESP8266_HAL.o: ../Core/Src/ESP8266_HAL.c ../Core/Inc/RGB.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/UART_HAL.h ../Core/Inc/ESP8266_HAL.h
 
-../Core/Inc/RGB.h:
+../Core/Inc/LED.h:
 
 ../Core/Inc/main.h:
 

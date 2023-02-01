@@ -60,8 +60,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B_Stop_Pin GPIO_PIN_2
-#define B_Stop_GPIO_Port GPIOE
 #define S_Int_Pin GPIO_PIN_3
 #define S_Int_GPIO_Port GPIOE
 #define S_Int_EXTI_IRQn EXTI3_IRQn
@@ -73,6 +71,10 @@ void Error_Handler(void);
 #define Fin_Garaje_EXTI_IRQn EXTI9_5_IRQn
 #define B_Tim_Pers_Pin GPIO_PIN_13
 #define B_Tim_Pers_GPIO_Port GPIOC
+#define B_Tim_Pers_EXTI_IRQn EXTI15_10_IRQn
+#define B_Stop_Pin GPIO_PIN_15
+#define B_Stop_GPIO_Port GPIOC
+#define B_Stop_EXTI_IRQn EXTI15_10_IRQn
 #define WiFi_OK_Pin GPIO_PIN_0
 #define WiFi_OK_GPIO_Port GPIOC
 #define Lluvia_Pin GPIO_PIN_1

@@ -12,6 +12,7 @@
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
 
+
 int readLector(){
 
 	  char vehicle[16] = "";
