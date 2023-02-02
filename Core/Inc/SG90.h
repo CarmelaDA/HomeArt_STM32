@@ -13,4 +13,4 @@
 #include "main.h"
 
 
-void actParcelaRFID();
+void actParcelRFID();

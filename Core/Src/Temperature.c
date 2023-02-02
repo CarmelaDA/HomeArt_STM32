@@ -8,6 +8,7 @@
 
 #include <Temperature.h>
 
+
 float temp_value(char i, char j, char k){
 
 	float a, b, c;

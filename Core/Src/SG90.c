@@ -13,21 +13,21 @@ extern TIM_HandleTypeDef htim2;
 extern UART_HandleTypeDef huart6;
 
 
-void actParcelaRFID(){
+void actParcelRFID(){
 
-	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Abrir S_Parcela
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); 	// Abrir S_Parcela
 
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Rebote
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); 	// Rebote
 	HAL_Delay(1000);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); 	// Parar S_Parcela
 
 	HAL_Delay(5000);
 
-	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Cerrar S_Parcela
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); 	// Cerrar S_Parcela
 
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Rebote
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); 	// Rebote
 	HAL_Delay(1000);
-	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parar S_Parcela
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); 	// Parar S_Parcela
 
 }
 

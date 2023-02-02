@@ -8,6 +8,7 @@
 
 #include <LED.h>
 
+
 int rgb_value(char i, char j, char k){
 
 	int a, b, c;
@@ -41,7 +42,7 @@ int rgb_value(char i, char j, char k){
 	return a+b+c;
 }
 
-void luces_automat(int i){
+void auto_light(int i){
 
 	if(i){
 		//vIlum[23]='1';

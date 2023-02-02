@@ -11,11 +11,11 @@
 #include "stm32f4xx_hal.h"
 
 
-/* Cambiar el tamaño del buffer según su requerimiento */
+/* Change buffer size as needed */
 #define UART_BUFFER_SIZE 512
 
 
-/* Estructura del BUFFER */
+/* BUUFER structure */
 typedef struct
 {
   unsigned char buffer[UART_BUFFER_SIZE]; // SIZE
@@ -27,76 +27,76 @@ typedef struct
 //************************************************************************************************************************************//
 
 
-/* Lee RX_BUFFER e incrementa la cuenta de TAIL del RX_BUFFER del UART indicado */
+/* Reads RX_BUFFER and increases the RX_ BUFFER TAIL count at the indicated UART */
 int UART_read(UART_HandleTypeDef *uart);
 
 
-/* Escribe en RX_BUFFER e incrementa la cuenta de HEAD en TX_BUFFER */
+/* Writes in RX_BUFFER and increases the TX_ BUFFER HEAD count */
 void UART_write(int c, UART_HandleTypeDef *uart);
 
-
-/* Envía un STRING */
+/* Sends STRING */
 void UART_send(const char *s, UART_HandleTypeDef *uart);
 
 
-/* Imprime un número en cualquier base (decimal, octal, binaria, hexadecimal, etc.) */
+/* Print any number at any base (decimal, octal, binary, hexadecimal, etc.) */
 void UART_changeBase(long n, uint8_t base, UART_HandleTypeDef *uart);
 
 
-/* Inicializa el RingBuffer */
+/* Initialize RingBuffer */
 void ringInit(void);  // MIRAR SI SE PUEDE CAMBIAR A UART_INIT();
 
 
-/* NO SÉ QUÉ HACE */
+/* IDK */
 void UART_flush(UART_HandleTypeDef *uart);
 
 
-/* Comprueba si el DATA está disponible para ser leída y registrada en el RX_BUFFER del UART seleccionado */
+/* Test if DATA is available to be readed and registered in RX_BUFFER at indicated UART */
 int UART_available(UART_HandleTypeDef *uart);
 
 
-/* Busca una STRING en el BUFFER indicado */
-// (devuelve 1 en caso de éxito, -1 en caso contrario) */
+/* Looks for STRING in indicated BUFFER */
+// (returns 1 in case of success, -1 in case of failure) */
 // if (look_for("some string", buffer)) do something
 int lookFor(char *str, char *buffertolookinto);
 
 
-/* Copia y pega una STRING de un BUFFER a otro */
+/* Copy and paste STRING from ine BUFFER to another */
 void getData(char *startString, char *endString, char *buffertocopyfrom, char *buffertocopyinto);
 
 
-/* Busca en RX_BUFFER sin incrementar la cuenta de la COLA */
-// (devuelve el caracter de la COLA) */
+/* Looks for in RX_BUFFER without increasing TAIL count */
+// (returns TAIL value) */
 // if (Uart_peek () == 'M') do something
 int UART_peek(UART_HandleTypeDef *uart);
 
 
-/* Copia la DATA del RX_BUFFER en el BUFFER. Se hace en BLOCKING MODE */
-// (devuelve 1 en caso de éxito, -1 en caso contrario) */
+/* Copy DATA from RX_BUFFER in the BUFFER. BLOCKING MODE is needed */
+// (returns 1 in case of success, -1 in case of failure) */
 // while (!(Copy_Upto ("some string", buffer, uart)));
 int UART_copyUpto(char *string, char *buffertocopyinto, UART_HandleTypeDef *uart);
 
 
-/* Copia y pega el NÚMERO de caracteres indicado (BLOCKING MODE) del RX_BUFFER a un BUFFER tras detectar el STRING indicado */
-// (devuelve 1 en caso de éxito, -1 en caso contrario)
+/* Copy and paste the indicated number of characters (in BLOCKING MODE) from the RX_BUFFER to a BUFFER after detect the indicated STRING */
+// (returns 1 in case of success, -1 in case of failure)
 // while (!(Get_after ("some string", 6, buffer, uart)));
 int UART_getAfter(char *string, uint8_t numberofchars, char *buffertosave, UART_HandleTypeDef *uart);
 
 
-/* Espera hasta que una STRING sea detectada en RX_BUFFER (devuelve 1 en caso de éxito, -1 en caso contrario) */
+/* Waits till STRING is detected in the RX_BUFFER */
+// (returns 1 in case of success, -1 in case of failure)
 // while (!(Wait_for("some string", uart)));
 int UART_waitFor(char *string, UART_HandleTypeDef *uart);
 
 
-/* ISR (interrupción) para el UART. Ponerlo en IRQ HANDLER */
+/* ISR (interruption) for the UART. IRQ HANDLER is needed */
 void UART_isr(UART_HandleTypeDef *huart);
 
 
 //************************************************************************************************************************************//
 
 
-/* Obtiene la POSICIÓN del STRING en la UART indicada */
-// (devuelve la posición en la cual el STRING se termina)
+/* Gets the POSITION of the STRING from the indicated UART */
+// (returns the final position of the STRING)
 int16_t UART_getPosition(char *string, UART_HandleTypeDef *uart);
 
 

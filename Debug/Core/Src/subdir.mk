@@ -13,7 +13,7 @@ C_SRCS += \
 ../Core/Src/RFID.c \
 ../Core/Src/RH.c \
 ../Core/Src/SG90.c \
-../Core/Src/Temperatura.c \
+../Core/Src/Temperature.c \
 ../Core/Src/UART_HAL.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f4xx_hal_msp.c \
@@ -31,7 +31,7 @@ OBJS += \
 ./Core/Src/RFID.o \
 ./Core/Src/RH.o \
 ./Core/Src/SG90.o \
-./Core/Src/Temperatura.o \
+./Core/Src/Temperature.o \
 ./Core/Src/UART_HAL.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f4xx_hal_msp.o \
@@ -49,7 +49,7 @@ C_DEPS += \
 ./Core/Src/RFID.d \
 ./Core/Src/RH.d \
 ./Core/Src/SG90.d \
-./Core/Src/Temperatura.d \
+./Core/Src/Temperature.d \
 ./Core/Src/UART_HAL.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f4xx_hal_msp.d \

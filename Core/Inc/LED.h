@@ -1,5 +1,5 @@
 /*
- * RGB.c
+ * LED.c
  *
  * Creado por Carmen Díez Almoguera, 2022
  *
@@ -15,4 +15,4 @@
 
 int rgb_value(char i, char j, char k);
 
-void luces_automat(int i);
+void auto_light(int i);

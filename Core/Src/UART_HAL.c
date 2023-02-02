@@ -9,7 +9,7 @@
 #include <string.h>
 
 
-/* Definir el UART del PC y el del Wi-Fi */
+/* Define PC UART and WiFi UART */
 
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart6;
@@ -17,7 +17,7 @@ extern UART_HandleTypeDef huart6;
 #define WiFi_UART &huart2
 #define PC_UART &huart6
 
-/* Ponerlo en IRQ HANDLER */
+/* IRQ HANDLER */
 // extern void UART_isr(UART_HandleTypeDef *huart);
 
 
@@ -38,29 +38,29 @@ Ring_Buffer *_tx_buffer2;
 void storeChar(unsigned char c, Ring_Buffer *buffer);
 
 
-void ringInit(void)
-{
+void ringInit(void){
+
 	_rx_buffer1 = &rx_buffer1;
     _tx_buffer1 = &tx_buffer1;
     _rx_buffer2 = &rx_buffer2;
     _tx_buffer2 = &tx_buffer2;
 
-    /* Habilita la INTERRUPCIÓN por ERROR del UART (frame error, noise error, overrun error) */
+    /* Enable the INTERRUPTION by UART ERROR (frame error, noise error, overrun error) */
     __HAL_UART_ENABLE_IT(WiFi_UART, UART_IT_ERR);
     __HAL_UART_ENABLE_IT(PC_UART, UART_IT_ERR);
 
-    /* Habilita la INTERRUPCIÓN por REGISTRO DE DATA VACÍO */
+    /* Enable the INTERRUPTION by EMPTY DATA REGISTER */
     __HAL_UART_ENABLE_IT(WiFi_UART, UART_IT_RXNE);
     __HAL_UART_ENABLE_IT(PC_UART, UART_IT_RXNE);
 }
 
 
-void storeChar(unsigned char c, Ring_Buffer *buffer)
-{
+void storeChar(unsigned char c, Ring_Buffer *buffer){
+
     int i = (unsigned int)(buffer->head + 1) % UART_BUFFER_SIZE;
 
-    // Si queremos almacenar lo recibido justo antes de TAIL, significando que HEAD avanzará hasta la posición de TAIL,
-    // se provocará un desbordamiento (overflow) del BUFFER, y, por lo tanto, no se escribirá el caracter o ni avanzaremos HEAD.
+    // If we want to stock something before the TAIL, meaning that HEAD will reach the TAIL position, it will cause a BUFFER overflow
+
     if(i != buffer->tail)
     {
     	buffer->buffer[buffer->head] = c;
@@ -69,8 +69,8 @@ void storeChar(unsigned char c, Ring_Buffer *buffer)
 }
 
 
-int lookFor (char *str, char *buffertolookinto)
-{
+int lookFor (char *str, char *buffertolookinto){
+
 	int stringlength = strlen (str);
 	int bufferlength = strlen (buffertolookinto);
 	int so_far = 0;
@@ -99,8 +99,8 @@ repeat:
 }
 
 
-void getData(char *startString, char *endString, char *buffertocopyfrom, char *buffertocopyinto)
-{
+void getData(char *startString, char *endString, char *buffertocopyfrom, char *buffertocopyinto){
+
 	int startStringLength = strlen (startString);
 	int endStringLength   = strlen (endString);
 	int so_far = 0;
@@ -161,8 +161,8 @@ repeat2:
 }
 
 
-void UART_flush(UART_HandleTypeDef *uart)
-{
+void UART_flush(UART_HandleTypeDef *uart){
+
 	if (uart == WiFi_UART)
 	{
 		memset(_rx_buffer1->buffer,'\0', UART_BUFFER_SIZE);
@@ -177,8 +177,8 @@ void UART_flush(UART_HandleTypeDef *uart)
 }
 
 
-int UART_peek(UART_HandleTypeDef *uart)
-{
+int UART_peek(UART_HandleTypeDef *uart){
+
 	if (uart == WiFi_UART)
 	{
 		if(_rx_buffer1->head == _rx_buffer1->tail) return -1;
@@ -197,11 +197,11 @@ int UART_peek(UART_HandleTypeDef *uart)
 }
 
 
-int UART_read(UART_HandleTypeDef *uart)
-{
+int UART_read(UART_HandleTypeDef *uart){
+
 	if (uart == WiFi_UART)
 	{
-		// Si HEAD no está delante de TAIL, no tenemos ningún CARACTER
+		// If HEAD is not before TAIL, there is not CHARACTER
 		if(_rx_buffer1->head == _rx_buffer1->tail) return -1;
 
 		else
@@ -214,7 +214,7 @@ int UART_read(UART_HandleTypeDef *uart)
 
 	else if (uart == PC_UART)
 	{
-		// Si HEAD no está delante de TAIL, no tenemos ningún CARACTER
+		// If HEAD is not before TAIL, there is not CHARACTER
 		if(_rx_buffer2->head == _rx_buffer2->tail) return -1;
 
 		else
@@ -229,21 +229,21 @@ int UART_read(UART_HandleTypeDef *uart)
 }
 
 
-void UART_write(int c, UART_HandleTypeDef *uart)
-{
+void UART_write(int c, UART_HandleTypeDef *uart){
+
 	if (c>=0)
 	{
 		if (uart == WiFi_UART)
 		{
 			int i = (_tx_buffer1->head + 1) % UART_BUFFER_SIZE;
 
-			// Si el BUFFER de salida está lleno, sólo se puede esperar a la INTERRUPCIÓN que lo vacia */
+			// If OUTPUT BUFFER is full, INTERRUPTION empties it
 		    while (i == _tx_buffer1->tail);
 
 		   _tx_buffer1->buffer[_tx_buffer1->head] = (uint8_t)c;
 		   _tx_buffer1->head = i;
 
-		   // Habilitar la INTERRUPCIÓN de TRANSMISIÓN del UART
+		   // Enables INTERRUPTION in the UART TRANSMISSION
 		   __HAL_UART_ENABLE_IT(WiFi_UART, UART_IT_TXE);
 	    }
 
@@ -251,21 +251,21 @@ void UART_write(int c, UART_HandleTypeDef *uart)
 		{
 			int i = (_tx_buffer2->head + 1) % UART_BUFFER_SIZE;
 
-			// Si el BUFFER de salida está lleno, sólo se puede esperar a la INTERRUPCIÓN que lo vacia */
+			// If OUTPUT BUFFER is full, INTERRUPTION empties it
 			while (i == _tx_buffer2->tail);
 
 			_tx_buffer2->buffer[_tx_buffer2->head] = (uint8_t)c;
 			_tx_buffer2->head = i;
 
-			// Habilitar la INTERRUPCIÓN de TRANSMISIÓN del UART
+			// Enables INTERRUPTION in the UART TRANSMISSION
 			__HAL_UART_ENABLE_IT(PC_UART, UART_IT_TXE);
 		}
 	}
 }
 
 
-int UART_available(UART_HandleTypeDef *uart)
-{
+int UART_available(UART_HandleTypeDef *uart){
+
 	if (uart == WiFi_UART) return (uint16_t)(UART_BUFFER_SIZE + _rx_buffer1->head - _rx_buffer1->tail) % UART_BUFFER_SIZE;
 
 	else if (uart == PC_UART) return (uint16_t)(UART_BUFFER_SIZE + _rx_buffer2->head - _rx_buffer2->tail) % UART_BUFFER_SIZE;
@@ -274,12 +274,12 @@ int UART_available(UART_HandleTypeDef *uart)
 }
 
 
-int UART_getAfter(char *string, uint8_t numberofchars, char *buffertosave, UART_HandleTypeDef *uart)
-{
+int UART_getAfter(char *string, uint8_t numberofchars, char *buffertosave, UART_HandleTypeDef *uart){
+
 	while (UART_waitFor(string, uart) != 1);
 
-	for (int indx=0; indx<numberofchars; indx++)
-	{
+	for (int indx=0; indx<numberofchars; indx++){
+
 		while (!(UART_available(uart)));
 		buffertosave[indx] = UART_read(uart);
 	}
@@ -288,24 +288,24 @@ int UART_getAfter(char *string, uint8_t numberofchars, char *buffertosave, UART_
 }
 
 
-void UART_send (const char *s, UART_HandleTypeDef *uart)
-{
+void UART_send (const char *s, UART_HandleTypeDef *uart){
+
 	while(*s!='\0') UART_write(*s++, uart);
 }
 
 
-void UART_changeBase (long n, uint8_t base, UART_HandleTypeDef *uart)
-{
+void UART_changeBase (long n, uint8_t base, UART_HandleTypeDef *uart){
+
   char buf[8 * sizeof(long) + 1]; // Assumes 8-bit chars plus zero byte.
   char *s = &buf[sizeof(buf) - 1];
 
   *s = '\0';
 
-  // En caso de introducir una BASE==1
+  // If BASE==1
   if (base < 2) base = 10;
 
-  do
-  {
+  do{
+
 	  unsigned long m = n;
       n /= base;
       char c = m - base * n;
@@ -316,8 +316,8 @@ void UART_changeBase (long n, uint8_t base, UART_HandleTypeDef *uart)
 }
 
 
-int UART_copyUpto(char *string, char *buffertocopyinto, UART_HandleTypeDef *uart)
-{
+int UART_copyUpto(char *string, char *buffertocopyinto, UART_HandleTypeDef *uart){
+
 	int so_far =0;
 	int len = strlen (string);
 	int indx = 0;
@@ -325,8 +325,8 @@ int UART_copyUpto(char *string, char *buffertocopyinto, UART_HandleTypeDef *uart
 again:
 	while (!UART_available(uart));
 
-	while (UART_peek(uart) != string[so_far])
-	{
+	while (UART_peek(uart) != string[so_far]){
+
 		buffertocopyinto[indx] = _rx_buffer1->buffer[_rx_buffer1->tail];
 		_rx_buffer1->tail = (unsigned int)(_rx_buffer1->tail + 1) % UART_BUFFER_SIZE;
 		indx++;
@@ -334,16 +334,16 @@ again:
 
 	}
 
-	while (UART_peek(uart) == string [so_far])
-	{
+	while (UART_peek(uart) == string [so_far]){
+
 		so_far++;
 		buffertocopyinto[indx++] = UART_read(uart);
 		if (so_far == len) return 1;
 		while (!UART_available(uart));
 	}
 
-	if (so_far != len)
-	{
+	if (so_far != len){
+
 		so_far = 0;
 		goto again;
 	}
@@ -354,31 +354,31 @@ again:
 }
 
 
-int UART_waitFor(char *string,UART_HandleTypeDef *uart)
-{
+int UART_waitFor(char *string,UART_HandleTypeDef *uart){
+
 	int so_far =0;
 	int len = strlen (string);
 
 again_device:
 	while (!UART_available(uart));
 
-	if (UART_peek(uart) != string[so_far])
-	{
+	if (UART_peek(uart) != string[so_far]){
+
 		 _rx_buffer1->tail = (unsigned int)(_rx_buffer1->tail + 1) % UART_BUFFER_SIZE ;
 		goto again_device;
 
 	}
 
-	while (UART_peek(uart) == string [so_far])
-	{
+	while (UART_peek(uart) == string [so_far]){
+
 		so_far++;
 		UART_read(uart);
 		if (so_far == len) return 1;
 		while (!UART_available(uart));
 	}
 
-	if (so_far != len)
-	{
+	if (so_far != len){
+
 		so_far = 0;
 		goto again_device;
 	}
@@ -389,12 +389,12 @@ again_device:
 }
 
 
-void UART_isr(UART_HandleTypeDef *huart)
-{
+void UART_isr(UART_HandleTypeDef *huart){
+
 	uint32_t isrflags   = READ_REG(huart->Instance->SR);
 	uint32_t cr1its     = READ_REG(huart->Instance->CR1);
 
-	/* Si DR (DATA REGISTER) no está vacío y RX INT está habilitado */
+	/* If DR (DATA REGISTER) is not empty and RX INT is ENABLE */
     if (((isrflags & USART_SR_RXNE) != RESET) && ((cr1its & USART_CR1_RXNEIE) != RESET))
     {
     	/************************************************************************************************************
@@ -409,36 +409,36 @@ void UART_isr(UART_HandleTypeDef *huart)
 
     	************************************************************************************************************/
 
-		huart->Instance->SR;                   // Leer SR (STATUS REGISTER)
-        unsigned char c = huart->Instance->DR; // Leer DR (DATA REGISTER)
+		huart->Instance->SR;                   // Read SR (STATUS REGISTER)
+        unsigned char c = huart->Instance->DR; // Read DR (DATA REGISTER)
 
-        if (huart == WiFi_UART)
-        {
-        	storeChar(c, _rx_buffer1); // Almacena DATA en el BUFFER
+        if (huart == WiFi_UART){
+
+        	storeChar(c, _rx_buffer1); // Stock DATA in BUFFER
         }
 
-        else if (huart == PC_UART)
-        {
-        	storeChar(c, _rx_buffer2); // Almacena DATA en el BUFFER
+        else if (huart == PC_UART){
+
+        	storeChar(c, _rx_buffer2); // Stock DATA in BUFFER
         }
 
         return;
     }
 
-    /* Si la INTERRUPCIÓN se produce por el TRANSMIT DATA REGISTER EMPTY */
-    if (((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET))
-    {
-    	if (huart == WiFi_UART)
-    	{
-    		if(tx_buffer1.head == tx_buffer1.tail)
-    	    {
-    			// BUFFER vacío, inhabilitamos la INTERRUPCIÓN
+    /* If INTERRUPTION is produced by TRANSMIT DATA REGISTER EMPTY */
+    if (((isrflags & USART_SR_TXE) != RESET) && ((cr1its & USART_CR1_TXEIE) != RESET)){
+
+    	if (huart == WiFi_UART){
+
+    		if(tx_buffer1.head == tx_buffer1.tail){
+
+    			// Empty BUFFER, disable INTERRUPTION
     	        __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
     	    }
 
-    		else
-    		{
-    			// Hay más DATA en el BUFFER de salida, envía el siguiente BYTE
+    		else{
+
+    			// There is more DATA in the OUTPUT BUFFER, send next BYTE
     			unsigned char c = tx_buffer1.buffer[tx_buffer1.tail];
     			tx_buffer1.tail = (tx_buffer1.tail + 1) % UART_BUFFER_SIZE;
 
@@ -459,17 +459,17 @@ void UART_isr(UART_HandleTypeDef *huart)
     		}
     	}
 
-    	else if (huart == PC_UART)
-    	{
-    		if(tx_buffer2.head == tx_buffer2.tail)
-    		{
-    			// BUFFER vacío, inhabilitamos la INTERRUPCIÓN
+    	else if (huart == PC_UART){
+
+    		if(tx_buffer2.head == tx_buffer2.tail){
+
+    			// Empty BUFFER, disable INTERRUPTION
         	    __HAL_UART_DISABLE_IT(huart, UART_IT_TXE);
     		}
 
-    		else
-        	{
-    			// Hay más DATA en el BUFFER de salida, envía el siguiente BYTE
+    		else{
+
+    			// There is more DATA in the OUTPUT BUFFER, send next BYTE
         	    unsigned char c = tx_buffer2.buffer[tx_buffer2.tail];
         	    tx_buffer2.tail = (tx_buffer2.tail + 1) % UART_BUFFER_SIZE;
 

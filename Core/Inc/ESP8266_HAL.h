@@ -8,20 +8,21 @@
 #ifndef INC_ESP8266_HAL_H_
 #define INC_ESP8266_HAL_H_
 
-// Vectores Fragmentos
-char vSeg[2];
-char vIlum[27];
-char vVent[5];
-char vExt[7];
-char vTemp[5];
-char vSal[6];
-char vCoc[2];
-char vBan[2];
-char vDor[4];
-char vOfi[12];
-char vGar[2];
-char vHuer[2];
-char vAj[16];
+
+// Arrays
+char vSecurity[2];
+char vLight[27];
+char vWindow[5];
+char vOutside[7];
+char vWeather[5];
+char vLiving[6];
+char vKitchen[2];
+char vBath[2];
+char vBedroom[4];
+char vOffice[12];
+char vGarage[2];
+char vGarden[2];
+char vSettings[16];
 int readDHT;
 
 void ESP_Init (char *SSID, char *PASSWD);

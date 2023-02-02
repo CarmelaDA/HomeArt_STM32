@@ -6,7 +6,7 @@
 "./Core/Src/RFID.o"
 "./Core/Src/RH.o"
 "./Core/Src/SG90.o"
-"./Core/Src/Temperatura.o"
+"./Core/Src/Temperature.o"
 "./Core/Src/UART_HAL.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32f4xx_hal_msp.o"

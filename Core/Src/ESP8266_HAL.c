@@ -18,7 +18,7 @@ extern UART_HandleTypeDef huart6;
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 
-// Definición de los puertos de comunicación
+// Comunication Ports Definition
 #define WiFi_UART &huart2
 #define PC_UART &huart6
 
@@ -82,7 +82,7 @@ void ESP_Init(char *SSID, char *PASSWD){
 
 	UART_send("AT\r\n", WiFi_UART);
 	while(!(UART_waitFor("OK\r\n", WiFi_UART)));
-	UART_send("AT  ---->  OK\n", PC_UART);
+	UART_send("\nAT  ---->  OK\n", PC_UART);
 
 
 	HAL_Delay(2000);
@@ -90,7 +90,7 @@ void ESP_Init(char *SSID, char *PASSWD){
 
 	/********** AT+RST **********/
 	UART_send("AT+RST\r\n", WiFi_UART);
-	UART_send("\nReseteando ", PC_UART);
+	UART_send("\nResetting ", PC_UART);
 
 	for (int i=0; i<3; i++)
 	{
@@ -115,7 +115,7 @@ void ESP_Init(char *SSID, char *PASSWD){
 
 
 	/********** AT+CWJAP="SSID","PASSWD" **********/
-	UART_send("Conectando con la RED proporcionada ", PC_UART);
+	UART_send("Connecting ", PC_UART);
 
 	for (int i=0; i<3; i++)
 	{
@@ -126,7 +126,7 @@ void ESP_Init(char *SSID, char *PASSWD){
 	sprintf (data, "AT+CWJAP=\"%s\",\"%s\"\r\n", SSID, PASSWD);
 	UART_send(data, WiFi_UART);
 	while (!(UART_waitFor("WIFI GOT IP\r\n\r\nOK\r\n", WiFi_UART)));
-	sprintf (data, "\n\nConectado a  \"%s\"\n\n", SSID);
+	sprintf (data, "\n\nConnected to \"%s\"\n\n", SSID);
 	UART_send(data,PC_UART);
 
 	//UART_send("AT+CIPSTA?\r\n", WiFi_UART);
@@ -163,7 +163,7 @@ void ESP_Init(char *SSID, char *PASSWD){
 
 
 	/********** FIN **********/
-	UART_send("Conectado a la IP\n\n", PC_UART);
+	UART_send("Conected to the IP\n\n", PC_UART);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, 1); // CONNECTED
 }
 
@@ -289,180 +289,180 @@ void ESP_messageHandler(void){
 		HAL_UART_Transmit(&huart6, (uint8_t *)textrc, 100, HAL_MAX_DELAY);
 		UART_send("\n", PC_UART);
 
-		fragment[0] = textrc[25]; // Asignación de Fragmento
+		fragment[0] = textrc[25]; // Fragment assignment
 		HAL_UART_Transmit(&huart6, (uint8_t *)fragment, 1, HAL_MAX_DELAY);
 		UART_send("\n", PC_UART);
 	}
 
 
-	// SENSORES DHT22
+	// DHT22
 	readDHT = 0;
 
 	if(textrc[27] == '[') readDHT = 1;
 
 
-	// SEGURIDAD
+	// SECURITY
 	if (fragment[0] == 's'){
 		UART_send("SEGURIDAD \n", PC_UART);
-		vSeg[0] = textrc[28]; // Alarma Interior
-		vSeg[1] = textrc[31]; // Alarma Exterior
+		vSecurity[0] = textrc[28]; // Alarma Interior
+		vSecurity[1] = textrc[31]; // Alarma Exterior
 	}
 
-	// ILUMINACIÓN
+	// LIGHTS
 	if (fragment[0] == 'i'){
 		UART_send("ILUMINACION \n", PC_UART);
-		vIlum[0] = textrc[28]; 	// Luz Sala
-		vIlum[1] = textrc[31]; 	// Luz Comedor
-		vIlum[2] = textrc[34]; 	// Luz Ambiente
-		vIlum[3] = textrc[37]; 	// Luz Recibidor
-		vIlum[4] = textrc[40]; 	// Luz Cocina
-		vIlum[5] = textrc[43]; 	// Luz Fregadero
-		vIlum[6] = textrc[46]; 	// Luz Baño
-		vIlum[7] = textrc[49]; 	// Luz Espejo
-		vIlum[8] = textrc[52]; 	// Luz Dormitorio
-		vIlum[9] = textrc[55]; 	// Luz Mesita Izq
-		vIlum[10] = textrc[58]; // Luz Mesita Dch
-		vIlum[11] = textrc[61]; // Luz Oficina
-		vIlum[12] = textrc[64]; // Luz Gaming
-		vIlum[13] = textrc[67]; // Luz Rx100
-		vIlum[14] = textrc[68]; // Luz Rx10
-		vIlum[15] = textrc[69]; // Luz Rx1
-		vIlum[16] = textrc[72]; // Luz Gx100
-		vIlum[17] = textrc[73]; // Luz Gx10
-		vIlum[18] = textrc[74]; // Luz Gx1
-		vIlum[19] = textrc[77]; // Luz Bx100
-		vIlum[20] = textrc[78]; // Luz Bx10
-		vIlum[21] = textrc[79]; // Luz Bx1
-		vIlum[22] = textrc[82]; // Luz Garaje
-		vIlum[23] = textrc[85]; // Luz Jardín
-		vIlum[24] = textrc[88]; // Luz Porche
-		vIlum[25] = textrc[91]; // Luz Tendedero
-		vIlum[26] = textrc[94]; // Automático
+		vLight[0] = textrc[28]; 	// Luz Sala
+		vLight[1] = textrc[31]; 	// Luz Comedor
+		vLight[2] = textrc[34]; 	// Luz Ambiente
+		vLight[3] = textrc[37]; 	// Luz Recibidor
+		vLight[4] = textrc[40]; 	// Luz Cocina
+		vLight[5] = textrc[43]; 	// Luz Fregadero
+		vLight[6] = textrc[46]; 	// Luz Baño
+		vLight[7] = textrc[49]; 	// Luz Espejo
+		vLight[8] = textrc[52]; 	// Luz Dormitorio
+		vLight[9] = textrc[55]; 	// Luz Mesita Izq
+		vLight[10] = textrc[58]; 	// Luz Mesita Dch
+		vLight[11] = textrc[61]; 	// Luz Oficina
+		vLight[12] = textrc[64]; 	// Luz Gaming
+		vLight[13] = textrc[67]; 	// Luz Rx100
+		vLight[14] = textrc[68]; 	// Luz Rx10
+		vLight[15] = textrc[69]; 	// Luz Rx1
+		vLight[16] = textrc[72]; 	// Luz Gx100
+		vLight[17] = textrc[73]; 	// Luz Gx10
+		vLight[18] = textrc[74]; 	// Luz Gx1
+		vLight[19] = textrc[77]; 	// Luz Bx100
+		vLight[20] = textrc[78]; 	// Luz Bx10
+		vLight[21] = textrc[79]; 	// Luz Bx1
+		vLight[22] = textrc[82]; 	// Luz Garaje
+		vLight[23] = textrc[85]; 	// Luz Jardín
+		vLight[24] = textrc[88]; 	// Luz Porche
+		vLight[25] = textrc[91]; 	// Luz Tendedero
+		vLight[26] = textrc[94]; 	// Automático
 
 
-		if(vIlum[0] == '0' || vSal[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET); // Luz Sala
-		else if(vIlum[0] == '1' || vSal[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
+		if(vLight[0] == '0' || vLiving[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET); 			// Luz Sala
+		else if(vLight[0] == '1' || vLiving[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
 
-		if(vIlum[1] == '0' || vSal[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET); // Luz Comedor
-		else if(vIlum[1] == '1'|| vSal[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
+		if(vLight[1] == '0' || vLiving[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET); 			// Luz Comedor
+		else if(vLight[1] == '1'|| vLiving[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
 
-		if(vIlum[2] == '0' || vSal[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET); // Luz Ambiente
-		else if(vIlum[2] == '1' || vSal[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
+		if(vLight[2] == '0' || vLiving[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET); 			// Luz Ambiente
+		else if(vLight[2] == '1' || vLiving[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
 
-		if(vIlum[3] == '0' || vSal[4] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); // Luz Recibidor
-		else if(vIlum[3] == '1' || vSal[4] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		if(vLight[3] == '0' || vLiving[4] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); 			// Luz Recibidor
+		else if(vLight[3] == '1' || vLiving[4] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 
-		if(vIlum[4] == '0' || vCoc[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); // Luz Cocina
-		else if(vIlum[4] == '1' || vCoc[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		if(vLight[4] == '0' || vKitchen[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); 		// Luz Cocina
+		else if(vLight[4] == '1' || vKitchen[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
 
-		if(vIlum[5] == '0' || vCoc[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET); // Luz Fregadero
-		else if(vIlum[5] == '1' || vCoc[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+		if(vLight[5] == '0' || vKitchen[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET); 		// Luz Fregadero
+		else if(vLight[5] == '1' || vKitchen[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 
-		if(vIlum[6] == '0' || vBan[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET); // Luz Baño
-		else if(vIlum[6] == '1' || vBan[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
+		if(vLight[6] == '0' || vBath[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET); 			// Luz Baño
+		else if(vLight[6] == '1' || vBath[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
 
-		if(vIlum[7] == '0' || vBan[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET); // Luz Espejo
-		else if(vIlum[7] == '1' || vBan[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
+		if(vLight[7] == '0' || vBath[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET); 			// Luz Espejo
+		else if(vLight[7] == '1' || vBath[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
 
-		if(vIlum[8] == '0' || vDor[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET); // Luz Dormitorio
-		else if(vIlum[8] == '1' || vDor[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
+		if(vLight[8] == '0' || vBedroom[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET);			// Luz Dormitorio
+		else if(vLight[8] == '1' || vBedroom[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
 
-		if(vIlum[9] == '0' || vDor[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET); // Luz Mesita Izq
-		else if(vIlum[9] == '1' || vDor[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
+		if(vLight[9] == '0' || vBedroom[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET); 		// Luz Mesita Izq
+		else if(vLight[9] == '1' || vBedroom[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
 
-		if(vIlum[10] == '0' || vDor[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET); // Luz Mesita Dch
-		else if(vIlum[10] == '1' || vDor[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
+		if(vLight[10] == '0' || vBedroom[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET); 		// Luz Mesita Dch
+		else if(vLight[10] == '1' || vBedroom[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
 
-		if(vIlum[11] == '0' || vOfi[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET); // Luz Oficina
-		else if(vIlum[11] == '1' || vOfi[0] == '1') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
+		if(vLight[11] == '0' || vOffice[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET); 		// Luz Oficina
+		else if(vLight[11] == '1' || vOffice[0] == '1') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
 
-		if(vIlum[12] == '0' || vOfi[1] == '0'){ // Luz Gaming
+		if(vLight[12] == '0' || vOffice[1] == '0'){ 													// Luz Gaming
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 		}
-		else if(vIlum[12] == '1' || vOfi[1] == '1'){
+		else if(vLight[12] == '1' || vOffice[1] == '1'){
 
 			//uint8_t r, g, b;
 
-			r = rgb_value (vIlum[13],vIlum[14],vIlum[15]);
-			g = rgb_value (vIlum[16],vIlum[17],vIlum[18]);
-			b = rgb_value (vIlum[19],vIlum[20],vIlum[21]);
+			r = rgb_value (vLight[13],vLight[14],vLight[15]);
+			g = rgb_value (vLight[16],vLight[17],vLight[18]);
+			b = rgb_value (vLight[19],vLight[20],vLight[21]);
 
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, g); // PA8
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, r); // PA9
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, b); // PA10
 		}
 
-		if(vIlum[22] == '0' || vGar[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET); // Luz Garaje
-		else if(vIlum[22] == '1' || vGar[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+		if(vLight[22] == '0' || vGarage[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET); 		// Luz Garaje
+		else if(vLight[22] == '1' || vGarage[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
 
-		if(vIlum[23] == '0' || vExt[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET); // Luz Jardín
-		else if(vIlum[23] == '1' || vExt[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
+		if(vLight[23] == '0' || vOutside[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET); 		// Luz Jardín
+		else if(vLight[23] == '1' || vOutside[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
 
-		if(vIlum[24] == '0' || vExt[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET); // Luz Porche
-		else if(vIlum[24] == '1' || vExt[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
+		if(vLight[24] == '0' || vOutside[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET); 		// Luz Porche
+		else if(vLight[24] == '1' || vOutside[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
 
-		if(vIlum[25] == '0' || vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); // Luz Tendedero
-		else if(vIlum[25] == '1' || vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+		if(vLight[25] == '0' || vOutside[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); 		// Luz Tendedero
+		else if(vLight[25] == '1' || vOutside[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 	}
 
-	// PUERTAS Y VENTANAS
+	// DOORS & WINDOWS
 	if (fragment[0] == 'p'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA PARCELA)\n", PC_UART);
-		vVent[0] = textrc[28]; // P. Parcela
+		vWindow[0] = textrc[28]; 	// P. Parcela
 	}
 	if (fragment[0] == 'g'){
 		UART_send("PUERTAS Y VENTANAS (PUERTA GARAJE)\n", PC_UART);
-		vVent[1] = textrc[31]; // P. Garaje
+		vWindow[1] = textrc[31]; 	// P. Garaje
 	}
 	if (fragment[0] == 'l'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA SALÓN)\n", PC_UART);
-		vVent[2] = textrc[34]; // V. Salón
+		vWindow[2] = textrc[34]; 	// V. Salón
 	}
 	if (fragment[0] == 'd'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA DORMITORIO)\n", PC_UART);
-		vVent[3] = textrc[37]; // V. Dormitorio
+		vWindow[3] = textrc[37]; 	// V. Dormitorio
 	}
 	if (fragment[0] == 'o'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA OFICINA)\n", PC_UART);
-		vVent[4] = textrc[40]; // V. Oficina
+		vWindow[4] = textrc[40]; 	// V. Oficina
 	}
 
-	// TIEMPO
+	// WEATHER
 	if (fragment[0] == 't'){
 		UART_send("TIEMPO\n", PC_UART);
-		vTemp[0] = textrc[28]; 	// Vent. Salón
-		vTemp[1] = textrc[31]; 	// Vent. Dormitorio
-		vTemp[2] = textrc[34]; 	// Vent. Oficina
-		vTemp[3] = textrc[37]; 	// Calefacción
-		vTemp[4] = textrc[40]; 	// Automático
+		vWeather[0] = textrc[28]; 	// Vent. Salón
+		vWeather[1] = textrc[31]; 	// Vent. Dormitorio
+		vWeather[2] = textrc[34]; 	// Vent. Oficina
+		vWeather[3] = textrc[37]; 	// Calefacción
+		vWeather[4] = textrc[40]; 	// Automático
 
-		if(vTemp[4] == '0'){
-			if(vTemp[3] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
-			else if(vTemp[3] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
+		if(vWeather[4] == '0'){
+			if(vWeather[3] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET);		// Calefacción
+			else if(vWeather[3] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
 		}
     }
 
-	// EXTERIOR
+	// OUTSIDE
 	if (fragment[0] == 'e'){
 		UART_send("LUCES (EXTERIOR)\n", PC_UART);
 		//vExt[0] = textrc[28]; 	// Toldo Tendedero
-		vExt[1] = textrc[31]; 	// Luz Tendedero
-		vExt[2] = textrc[34]; 	// Luz Porche
-		vExt[3] = textrc[37]; 	// Luz Jardín
+		vOutside[1] = textrc[31]; 	// Luz Tendedero
+		vOutside[2] = textrc[34]; 	// Luz Porche
+		vOutside[3] = textrc[37]; 	// Luz Jardín
 		//vExt[4] = textrc[40]; 	// Puerta Parcela
-		vExt[5] = textrc[43]; // Automático
-		vExt[6] = textrc[46]; // Ropa tendida
+		vOutside[5] = textrc[43]; 	// Automático
+		vOutside[6] = textrc[46]; 	// Ropa tendida
 
-		if(vIlum[25] == '0' || vExt[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); // Luz Tendedero
-		else if(vIlum[25] == '1' || vExt[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
+		if(vLight[25] == '0' || vOutside[1] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET); 		// Luz Tendedero
+		else if(vLight[25] == '1' || vOutside[1] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, SET);
 
-		if(vIlum[24] == '0' || vExt[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET); // Luz Porche
-		else if(vIlum[24] == '1' || vExt[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
+		if(vLight[24] == '0' || vOutside[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, RESET); 		// Luz Porche
+		else if(vLight[24] == '1' || vOutside[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_4, SET);
 
-		if(vIlum[23] == '0' || vExt[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET); // Luz Jardín
-		else if(vIlum[23] == '1' || vExt[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
+		if(vLight[23] == '0' || vOutside[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, RESET); 		// Luz Jardín
+		else if(vLight[23] == '1' || vOutside[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, SET);
 	}
 
 	if (fragment[0] == 'P'){
@@ -471,42 +471,42 @@ void ESP_messageHandler(void){
 		//vExt[1] = textrc[31]; 	// Luz Tendedero
 		//vExt[2] = textrc[34]; 	// Luz Porche
 		//vExt[3] = textrc[37]; 	// Luz Jardín
-		vExt[4] = textrc[40]; 	// Puerta Parcela
+		vOutside[4] = textrc[40]; 	// Puerta Parcela
 	}
 
 	if (fragment[0] == 'R'){
 		UART_send("TENDEDERO (EXTERIOR)\n", PC_UART);
-		vExt[0] = textrc[28]; 	// Toldo Tendedero
+		vOutside[0] = textrc[28]; 	// Toldo Tendedero
 		//vExt[1] = textrc[31]; 	// Luz Tendedero
 		//vExt[2] = textrc[34]; 	// Luz Porche
 		//vExt[3] = textrc[37]; 	// Luz Jardín
 		//vExt[4] = textrc[40]; 	// Puerta Parcela
 	}
 
-	// SALÓN
+	// LIVING ROOM
 	if (fragment[0] == 'n'){
 		UART_send("SALON \n", PC_UART);
-		vSal[0] = textrc[28]; 	// Televisión
-		vSal[1] = textrc[31]; 	// Luz Sala
-		vSal[2] = textrc[34]; 	// Luz Comedor
-		vSal[3] = textrc[37]; 	// Luz Ambiente
-		vSal[4] = textrc[40]; 	// Luz Recibidor
+		vLiving[0] = textrc[28]; 	// Televisión
+		vLiving[1] = textrc[31]; 	// Luz Sala
+		vLiving[2] = textrc[34]; 	// Luz Comedor
+		vLiving[3] = textrc[37]; 	// Luz Ambiente
+		vLiving[4] = textrc[40]; 	// Luz Recibidor
 		//vSal[5] = textrc[43]; 	// V. Salón
 
-		if(vSal[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET); // Televisión
-		else if(vSal[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, SET);
+		if(vLiving[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, RESET); 							// Televisión
+		else if(vLiving[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, SET);
 
-		if(vIlum[0] == '0' || vSal[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET); // Luz Sala
-		else if(vIlum[0] == '1' || vSal[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
+		if(vLight[0] == '0' || vLiving[1] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, RESET); 		// Luz Sala
+		else if(vLight[0] == '1' || vLiving[1] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_3, SET);
 
-		if(vIlum[1] == '0' || vSal[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET); // Luz Comedor
-		else if(vIlum[1] == '1' || vSal[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
+		if(vLight[1] == '0' || vLiving[2] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, RESET); 		// Luz Comedor
+		else if(vLight[1] == '1' || vLiving[2] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_1, SET);
 
-		if(vIlum[2] == '0' || vSal[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET); // Luz Ambiente
-		else if(vIlum[2] == '1' || vSal[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
+		if(vLight[2] == '0' || vLiving[3] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, RESET); 		// Luz Ambiente
+		else if(vLight[2] == '1' || vLiving[3] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_5, SET);
 
-		if(vIlum[3] == '0' || vSal[4] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); // Luz Recibidor
-		else if(vIlum[3] == '1' || vSal[4] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
+		if(vLight[3] == '0' || vLiving[4] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, RESET); 		// Luz Recibidor
+		else if(vLight[3] == '1' || vLiving[4] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_0, SET);
 	}
 
 	if (fragment[0] == 'N'){
@@ -516,51 +516,51 @@ void ESP_messageHandler(void){
 			//vSal[2] = textrc[34]; 	// Luz Comedor
 			//vSal[3] = textrc[37]; 	// Luz Ambiente
 			//vSal[4] = textrc[40]; 	// Luz Recibidor
-			vSal[5] = textrc[43]; 	// V. Salón
+			vLiving[5] = textrc[43]; 	// V. Salón
 	}
 
-	// COCINA
+	// KITCHEN
 	if (fragment[0] == 'c'){
 		UART_send("COCINA \n", PC_UART);
-		vCoc[0] = textrc[28]; 	// Luz Cocina
-		vCoc[1] = textrc[31]; 	// Luz Fregadero
+		vKitchen[0] = textrc[28]; 	// Luz Cocina
+		vKitchen[1] = textrc[31]; 	// Luz Fregadero
 
-		if(vIlum[4] == '0' || vCoc[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); // Luz Cocina
-		else if(vIlum[4] == '1' || vCoc[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
+		if(vLight[4] == '0' || vKitchen[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, RESET); 		// Luz Cocina
+		else if(vLight[4] == '1' || vKitchen[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, SET);
 
-		if(vIlum[5] == '0' || vCoc[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET); // Luz Fregadero
-		else if(vIlum[5] == '1' || vCoc[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
+		if(vLight[5] == '0' || vKitchen[1] == '0') HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, RESET); 		// Luz Fregadero
+		else if(vLight[5] == '1' || vKitchen[1] == '1')HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, SET);
 	}
 
-	// BAÑO
+	// BATHROOM
 	if (fragment[0] == 'b'){
 		UART_send("BAÑO \n", PC_UART);
-		vBan[0] = textrc[28]; 	// Luz Baño
-		vBan[1] = textrc[31]; 	// Luz Espejo
+		vBath[0] = textrc[28]; 	// Luz Baño
+		vBath[1] = textrc[31]; 	// Luz Espejo
 
-		if(vIlum[6] == '0' || vBan[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET); // Luz Baño
-		else if(vIlum[6] == '1' || vBan[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
+		if(vLight[6] == '0' || vBath[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, RESET); 		// Luz Baño
+		else if(vLight[6] == '1' || vBath[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_6, SET);
 
-		if(vIlum[7] == '0' || vBan[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET); // Luz Espejo
-		else if(vIlum[7] == '1' || vBan[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
+		if(vLight[7] == '0' || vBath[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, RESET); 		// Luz Espejo
+		else if(vLight[7] == '1' || vBath[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3, SET);
 	}
 
-	// DORMITORIO
+	// BEDROOM
 	if (fragment[0] == 'r'){
 		UART_send("LUCES (DORMITORIO) \n", PC_UART);
-		vDor[0] = textrc[28]; 	// Luz Dormitorio
-		vDor[1] = textrc[31]; 	// Luz Mesita Izq
-		vDor[2] = textrc[34]; 	// Luz Mesita Dch
+		vBedroom[0] = textrc[28]; 	// Luz Dormitorio
+		vBedroom[1] = textrc[31]; 	// Luz Mesita Izq
+		vBedroom[2] = textrc[34]; 	// Luz Mesita Dch
 		//vDor[3] = textrc[37]; 	// V. Dormitorio
 
-		if(vIlum[8] == '0' || vDor[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET); // Luz Dormitorio
-		else if(vIlum[8] == '1' || vDor[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
+		if(vLight[8] == '0' || vBedroom[0] == '0') HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, RESET); 		// Luz Dormitorio
+		else if(vLight[8] == '1' || vBedroom[0] == '1')HAL_GPIO_WritePin(GPIOD, GPIO_PIN_7, SET);
 
-		if(vIlum[9] == '0' || vDor[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET); // Luz Mesita Izq
-		else if(vIlum[9] == '1' || vDor[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
+		if(vLight[9] == '0' || vBedroom[1] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, RESET); 		// Luz Mesita Izq
+		else if(vLight[9] == '1' || vBedroom[1] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, SET);
 
-		if(vIlum[10] == '0' || vDor[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET); // Luz Mesita Dch
-		else if(vIlum[10] == '1' || vDor[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
+		if(vLight[10] == '0' || vBedroom[2] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, RESET); 		// Luz Mesita Dch
+		else if(vLight[10] == '1' || vBedroom[2] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, SET);
 	}
 
 	if (fragment[0] == 'D'){
@@ -568,40 +568,40 @@ void ESP_messageHandler(void){
 		//vDor[0] = textrc[28]; 	// Luz Dormitorio
 		//vDor[1] = textrc[31]; 	// Luz Mesita Izq
 		//vDor[2] = textrc[34]; 	// Luz Mesita Dch
-		vDor[3] = textrc[37]; 	// V. Dormitorio
+		vBedroom[3] = textrc[37]; 	// V. Dormitorio
 	}
 
-	// OFICINA
+	// OFFICE
 	if (fragment[0] == 'f'){
 		UART_send("LUCES (OFICINA) \n", PC_UART);
-		vOfi[0] = textrc[28]; // Luz Oficina
-		vOfi[1] = textrc[31]; // Luz Gaming
-		vOfi[2] = textrc[34]; // Luz Rx100
-		vOfi[3] = textrc[35]; // Luz Rx10
-		vOfi[4] = textrc[36]; // Luz Rx1
-		vOfi[5] = textrc[39]; // Luz Gx100
-		vOfi[6] = textrc[40]; // Luz Gx10
-		vOfi[7] = textrc[41]; // Luz Gx1
-		vOfi[8] = textrc[44]; // Luz Bx100
-		vOfi[9] = textrc[45]; // Luz Bx10
-		vOfi[10] = textrc[46]; // Luz Bx1
-		//vOfi[11] = textrc[49]; // V. Oficina
+		vOffice[0] = textrc[28]; 	// Luz Oficina
+		vOffice[1] = textrc[31]; 	// Luz Gaming
+		vOffice[2] = textrc[34]; 	// Luz Rx100
+		vOffice[3] = textrc[35]; 	// Luz Rx10
+		vOffice[4] = textrc[36];	// Luz Rx1
+		vOffice[5] = textrc[39]; 	// Luz Gx100
+		vOffice[6] = textrc[40]; 	// Luz Gx10
+		vOffice[7] = textrc[41]; 	// Luz Gx1
+		vOffice[8] = textrc[44];	// Luz Bx100
+		vOffice[9] = textrc[45]; 	// Luz Bx10
+		vOffice[10] = textrc[46];	// Luz Bx1
+		//vOfi[11] = textrc[49]; 	// V. Oficina
 
-		if(vIlum[11] == '0' || vOfi[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET); // Luz Oficina
-		else if(vIlum[11] == '1' || vOfi[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
+		if(vLight[11] == '0' || vOffice[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, RESET); 		// Luz Oficina
+		else if(vLight[11] == '1' || vOffice[0] == '1')HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, SET);
 
-		if(vIlum[12] == '0' || vOfi[1] == '0'){
+		if(vLight[12] == '0' || vOffice[1] == '0'){
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
 		}
-		else if(vIlum[12] == '1' || vOfi[1] == '1'){ // Luz Gaming
+		else if(vLight[12] == '1' || vOffice[1] == '1'){ 												// Luz Gaming
 
 			//uint8_t r, g, b;
 
-			r = rgb_value(vOfi[2],vOfi[3],vOfi[4]);
-			g = rgb_value(vOfi[5],vOfi[6],vOfi[7]);
-			b = rgb_value(vOfi[8],vOfi[9],vOfi[10]);
+			r = rgb_value(vOffice[2],vOffice[3],vOffice[4]);
+			g = rgb_value(vOffice[5],vOffice[6],vOffice[7]);
+			b = rgb_value(vOffice[8],vOffice[9],vOffice[10]);
 
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, g); // PA8
 			__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, r); // PA9
@@ -611,67 +611,67 @@ void ESP_messageHandler(void){
 
 	if (fragment[0] == 'F'){
 		UART_send("V. OFICINA (OFICINA) \n", PC_UART);
-		//vOfi[0] = textrc[28]; // Luz Oficina
-		//vOfi[1] = textrc[31]; // Luz Gaming
-		//vOfi[2] = textrc[34]; // Luz Rx100
-		//vOfi[3] = textrc[35]; // Luz Rx10
-		//vOfi[4] = textrc[36]; // Luz Rx1
-		//vOfi[5] = textrc[39]; // Luz Gx100
-		//vOfi[6] = textrc[40]; // Luz Gx10
-		//vOfi[7] = textrc[41]; // Luz Gx1
-		//vOfi[8] = textrc[44]; // Luz Bx100
-		//vOfi[9] = textrc[45]; // Luz Bx10
-		//vOfi[10] = textrc[46]; // Luz Bx1
-		vOfi[11] = textrc[49]; // V. Oficina
+		//vOfi[0] = textrc[28]; 	// Luz Oficina
+		//vOfi[1] = textrc[31]; 	// Luz Gaming
+		//vOfi[2] = textrc[34]; 	// Luz Rx100
+		//vOfi[3] = textrc[35]; 	// Luz Rx10
+		//vOfi[4] = textrc[36]; 	// Luz Rx1
+		//vOfi[5] = textrc[39]; 	// Luz Gx100
+		//vOfi[6] = textrc[40]; 	// Luz Gx10
+		//vOfi[7] = textrc[41]; 	// Luz Gx1
+		//vOfi[8] = textrc[44]; 	// Luz Bx100
+		//vOfi[9] = textrc[45]; 	// Luz Bx10
+		//vOfi[10] = textrc[46]; 	// Luz Bx1
+		vOffice[11] = textrc[49]; 	// V. Oficina
 	}
 
-	// GARAJE
+	// GARAGE
 	if (fragment[0] == 'j'){
 		UART_send("LUZ GARAJE (GARAJE) \n", PC_UART);
-		vGar[0] = textrc[28]; // Luz Garaje
-		//vGar[1] = textrc[31]; // P. Garaje
+		vGarage[0] = textrc[28]; 	// Luz Garaje
+		//vGar[1] = textrc[31]; 	// P. Garaje
 
-		if(vIlum[22] == '0' || vGar[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET); // Luz Garaje
-		else if(vIlum[22] == '1' || vGar[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
+		if(vLight[22] == '0' || vGarage[0] == '0') HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, RESET);		// Luz Garaje
+		else if(vLight[22] == '1' || vGarage[0] == '1')HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, SET);
 	}
 
 	if (fragment[0] == 'J'){
 		UART_send("P. GARAJE (GARAJE) \n", PC_UART);
-		//vGar[0] = textrc[28]; // Luz Garaje
-		vGar[1] = textrc[31]; // P. Garaje
+		//vGar[0] = textrc[28]; 	// Luz Garaje
+		vGarage[1] = textrc[31]; 	// P. Garaje
 	}
 
-	// HUERTO
+	// GARDEN
 	if (fragment[0] == 'h'){
 		UART_send("RIEGO HUERTO \n", PC_UART);
-		vHuer[0] = textrc[28]; // Riego
-		vHuer[1] = textrc[31]; // Automático
+		vGarden[0] = textrc[28]; 	// Riego
+		vGarden[1] = textrc[31]; 	// Automático
 
 		/*if(vHuer[1] == '0'){
-			if(vHuer[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Riego
+			if(vHuer[0] == '0') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); 							// Riego
 			else if(vHuer[0] == '1') HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET);
 		}*/
 	}
 
-	// AJUSTES
+	// SETTINGS
 	if (fragment[0] == 'a'){
 		UART_send("AJUSTES \n", PC_UART);
-		vAj[0] = textrc[28]; 	// Vent. Enc. x 10
-		vAj[1] = textrc[29]; 	// Vent. Enc. x 1
-		vAj[2] = textrc[31]; 	// Vent. Enc. x 0.1
-		vAj[3] = textrc[34]; 	// Vent. Apa. x 10
-		vAj[4] = textrc[35]; 	// Vent. Apa. x 1
-		vAj[5] = textrc[37]; 	// Vent. Apa. x 0.1
-		vAj[6] = textrc[40]; 	// Calef. Enc. x 10
-		vAj[7] = textrc[41]; 	// Calef. Enc. x 1
-		vAj[8] = textrc[43]; 	// Calef. Enc. x 0.1
-		vAj[9] = textrc[46]; 	// Calef. Apa. x 10
-		vAj[10] = textrc[47]; 	// Calef. Apa. x 1
-		vAj[11] = textrc[49]; 	// Calef. Apa. x 0.1
-		vAj[12] = textrc[52]; 	// RH Mínimo x 10
-		vAj[13] = textrc[53]; 	// RH Mínimo x 1
-		vAj[14] = textrc[56]; 	// RH Máximo x 10
-		vAj[15] = textrc[57]; 	// RH Máximo x 1
+		vSettings[0] = textrc[28]; 		// Vent. Enc. x 10
+		vSettings[1] = textrc[29]; 		// Vent. Enc. x 1
+		vSettings[2] = textrc[31]; 		// Vent. Enc. x 0.1
+		vSettings[3] = textrc[34]; 		// Vent. Apa. x 10
+		vSettings[4] = textrc[35]; 		// Vent. Apa. x 1
+		vSettings[5] = textrc[37]; 		// Vent. Apa. x 0.1
+		vSettings[6] = textrc[40]; 		// Calef. Enc. x 10
+		vSettings[7] = textrc[41]; 		// Calef. Enc. x 1
+		vSettings[8] = textrc[43]; 		// Calef. Enc. x 0.1
+		vSettings[9] = textrc[46]; 		// Calef. Apa. x 10
+		vSettings[10] = textrc[47]; 	// Calef. Apa. x 1
+		vSettings[11] = textrc[49]; 	// Calef. Apa. x 0.1
+		vSettings[12] = textrc[52]; 	// RH Mínimo x 10
+		vSettings[13] = textrc[53]; 	// RH Mínimo x 1
+		vSettings[14] = textrc[56]; 	// RH Máximo x 10
+		vSettings[15] = textrc[57]; 	// RH Máximo x 1
 	}
 
 	//__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);

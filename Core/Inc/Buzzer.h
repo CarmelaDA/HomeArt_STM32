@@ -13,5 +13,5 @@
 #include "main.h"
 
 
-void playTimbre(void);
-void playAlarma(void);
+void playBell(void);
+void playAlarm(void);

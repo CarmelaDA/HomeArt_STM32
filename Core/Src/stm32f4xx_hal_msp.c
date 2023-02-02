@@ -144,10 +144,10 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* hadc)
     /**ADC3 GPIO Configuration
     PC1     ------> ADC3_IN11
     */
-    GPIO_InitStruct.Pin = Lluvia_Pin;
+    GPIO_InitStruct.Pin = Rain_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(Lluvia_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(Rain_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN ADC3_MspInit 1 */
 
@@ -209,7 +209,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* hadc)
     /**ADC3 GPIO Configuration
     PC1     ------> ADC3_IN11
     */
-    HAL_GPIO_DeInit(Lluvia_GPIO_Port, Lluvia_Pin);
+    HAL_GPIO_DeInit(Rain_GPIO_Port, Rain_Pin);
 
   /* USER CODE BEGIN ADC3_MspDeInit 1 */
 
@@ -355,19 +355,19 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     PA1     ------> TIM2_CH2
     PB10     ------> TIM2_CH3
     */
-    GPIO_InitStruct.Pin = S_Parcela_Pin|S_Garaje_Pin;
+    GPIO_InitStruct.Pin = Parcel_Servo_Pin|Garaje_Servo_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = S_Tendedero_Pin;
+    GPIO_InitStruct.Pin = Awning_Servo_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-    HAL_GPIO_Init(S_Tendedero_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(Awning_Servo_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN TIM2_MspPostInit 1 */
 
@@ -386,14 +386,14 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     PC8     ------> TIM3_CH3
     PC9     ------> TIM3_CH4
     */
-    GPIO_InitStruct.Pin = S_Dormitorio_Pin;
+    GPIO_InitStruct.Pin = Bedroom_Servo_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
-    HAL_GPIO_Init(S_Dormitorio_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(Bedroom_Servo_GPIO_Port, &GPIO_InitStruct);
 
-    GPIO_InitStruct.Pin = S_Oficina_Pin|S_Salon_Pin;
+    GPIO_InitStruct.Pin = Office_Servo_Pin|Living_Servo_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

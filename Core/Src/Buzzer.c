@@ -11,7 +11,7 @@
 extern TIM_HandleTypeDef htim4;
 
 
-void playTimbre(){
+void playBell(){
 
 	uint8_t tone;
 
@@ -29,7 +29,7 @@ void playTimbre(){
 }
 
 
-void playAlarma(){
+void playAlarm(){
 
 	uint8_t tone;
 

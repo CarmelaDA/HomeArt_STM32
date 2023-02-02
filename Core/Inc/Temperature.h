@@ -1,12 +1,12 @@
 /*
- * Temperatura.c
+ * Temperature.c
  *
  * Creado por Carmen Díez Almoguera, 2022
  *
  */
 
-//#ifndef INC_TEMPERATURA_H_
-//#define INC_TEMPERATURA_H_
+//#ifndef INC_TEMPERATURE_H_
+//#define INC_TEMPERATURE_H_
 
 #include <stdlib.h>
 #include <string.h>

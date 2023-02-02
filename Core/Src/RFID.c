@@ -13,14 +13,14 @@ extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
 
 
-int readLector(){
+int readRFID(){
 
 	  char vehicle[16] = "";
 
-	  char coche[3] = "247";
-	  char moto[3] = "355";
+	  char car[3] = "247";
+	  char motorcycle[3] = "355";
 
-	  int familia = 0;
+	  int family = 0;
 
 	  for(int i=0; i<16; i++) vehicle[i] = '_';
 
@@ -30,25 +30,25 @@ int readLector(){
 
 	  else {
 		  for(int i = 0; i<3; i++){
-			  familia = 1;
-			  if(vehicle[i+13] != coche[i]){
-				  familia = 0;
+			  family = 1;
+			  if(vehicle[i+13] != car[i]){
+				  family = 0;
 				  i = 2;
 			  }
 		  }
 
-		  if(!familia){
+		  if(!family){
 			  for(int i = 0; i<3; i++){
-				  familia = 1;
-				  if(vehicle[13+i] != moto[i]){
-					  familia = 0;
+				  family = 1;
+				  if(vehicle[13+i] != motorcycle[i]){
+					  family = 0;
 					  i = 2;
 				  }
 			  }
 		  }
 	  }
 
-	  return familia;
+	  return family;
 }
 
 

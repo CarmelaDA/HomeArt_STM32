@@ -1,5 +1,5 @@
 /*
- * DHT22.h
+ * DHT22_In.h
  *
  * Creado por Carmen Díez Almoguera, 2022
  *
@@ -7,6 +7,7 @@
 
 #ifndef DHT22_H_
 #define DHT22_H_
+
 
 typedef struct{
 

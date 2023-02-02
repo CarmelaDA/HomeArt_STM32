@@ -20,16 +20,16 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <DHT22.h>
+#include <LDR.h>
+#include <RFID.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Buzzer.h"
-#include "DHT22.h"
 #include "ESP8266_HAL.h"
-#include "LDR.h"
 #include "LED.h"
-#include "RFID.h"
 #include "RH.h"
 #include "SG90.h"
 #include "Temperature.h"
@@ -147,11 +147,11 @@ static void MX_USART3_UART_Init(void);
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
-    if (GPIO_Pin==S_Int_Pin)
+    if (GPIO_Pin==S_In_Pin)
     {
         inside = 1;
     }
-    if (GPIO_Pin==S_Ext_Pin)
+    if (GPIO_Pin==S_Out_Pin)
     {
         outside = 1;
     }
@@ -274,18 +274,16 @@ int main(void)
   // Buzzer
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1);
 
-  /*----------- DHT22 Sensor-----------*/ //______________________________________________________________________________________________AQUÍ
+  /*----------- DHT22 Sensor-----------*/
   HAL_TIM_Base_Start(&htim6);
 
-  /*----------- Inicialización LDR & HW390 & Lluvia -----------*/
+  /*----------- LDR & HW390 & Rain Initialization  -----------*/
   HAL_ADC_Start(&hadc1); // LDR
   HAL_ADC_Start(&hadc2); // HW-390
-  HAL_ADC_Start(&hadc3); // Lluvia
+  HAL_ADC_Start(&hadc3); // Rain
 
   //__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
   ESP_Init("iPhone Carmela","pistacho");
-  //ESP_Init("iPhone de Mario","11111111");
-  //ESP_Init("MPIGDATA","B88458609A");
 
   /* USER CODE END 2 */
 
@@ -298,166 +296,166 @@ int main(void)
 
 	  	ESP_messageHandler();
 
-		// TIMBRE VEHICULO
+		// Vehicle Doorbell
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) == 0){
 
-			int known = readLector();
+			int known = readRFID();
 			if(known == 1){
-				char conocido[18]= "ABRIENDO PUERTA \n\n";
-				HAL_UART_Transmit(&huart6, (uint8_t *) conocido, 18, HAL_MAX_DELAY);
+				char kn[15] = "OPENING DOOR \n\n";
+				HAL_UART_Transmit(&huart6, (uint8_t *) kn, 15, HAL_MAX_DELAY);
 
-				actParcelaRFID();
+				actParcelRFID();
 			}
 			else if(known == 0){
-				char desconocido[18] = "LLAMANDO TIMBRE \n\n";
-				HAL_UART_Transmit(&huart6, (uint8_t *) desconocido, 18, HAL_MAX_DELAY);
+				char unkn[19] = "CALLING THE BELL \n\n";
+				HAL_UART_Transmit(&huart6, (uint8_t *) unkn, 19, HAL_MAX_DELAY);
 
-				playTimbre();
+				playBell();
 			}
 		}
 
-		// TIMBRE PEATÓN
+		// People Doorbell
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0){
 
-				playTimbre();
+				playBell();
 		}
 
-		// STOP ALARMA
+		// Alarm Stop
 		if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_15) == 0){
 
 			__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 		}
 
-		// ALARMA
-		if (debouncer(&inside, S_Int_GPIO_Port, S_Int_Pin)){
+		// Alarm
+		if (debouncer(&inside, S_In_GPIO_Port, S_In_Pin)){
 
-			if(vSeg[0] == '1') playAlarma();
+			if(vSecurity[0] == '1') playAlarm();
 		}
-		if (debouncer(&outside, S_Ext_GPIO_Port, S_Ext_Pin)){
+		if (debouncer(&outside, S_Out_GPIO_Port, S_Out_Pin)){
 
-			if(vSeg[1] == '1') playAlarma();
+			if(vSecurity[1] == '1') playAlarm();
 		}
 
-		// PUERTA PARCELA (90)
-		if(vVent[0]=='1' || vExt[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91);
-		if(vVent[0]=='0' || vExt[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
+		// PARCEL DOOR (90)
+		if(vWindow[0]=='1' || vOutside[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91);
+		if(vWindow[0]=='0' || vOutside[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
 
-		// PUERTA GARAJE (90)
-		if(vVent[1]=='1' || vGar[1] == '1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // más rápido a 30
-		if(vVent[1]=='0' || vGar[1] == '0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
+		// GARAGE DOOR (90)
+		if(vWindow[1]=='1' || vGarage[1] == '1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // Faster at 30
+		if(vWindow[1]=='0' || vGarage[1] == '0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
 
-		// TOLDO TENDEDERO (90)
-		if(vExt[0]=='1'){
+		// CLOTHES LINE AWNING (90)
+		if(vOutside[0]=='1'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
 			awning = 1;
 		}
-		if(vExt[0]=='0'){
+		if(vOutside[0]=='0'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-			toldo = 0;
+			awning = 0;
 		}
-		vExt[0]='x';
+		vOutside[0]='x';
 
-		// VENTANA SALÓN (90)
-		if(vVent[2]=='1' || vSal[5]=='1') {
+		// LIVING ROOM WINDOW (90)
+		if(vWindow[2]=='1' || vLiving[5]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
-		if(vVent[2]=='0'|| vSal[5]=='0') {
+		if(vWindow[2]=='0'|| vLiving[5]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 89);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
-		vVent[2]='x';
-		vSal[5]='x';
+		vWindow[2]='x';
+		vLiving[5]='x';
 
-		// VENTANA DORMITORIO (90)
-		if(vVent[3]=='1' || vDor[3]=='1') {
+		// BEDROOM WINDOW (90)
+		if(vWindow[3]=='1' || vBedroom[3]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 92);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
-		if(vVent[3]=='0' || vDor[3]=='0') {
+		if(vWindow[3]=='0' || vBedroom[3]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 89);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
 		}
-		vVent[3]='x';
-		vDor[3]='x';
+		vWindow[3]='x';
+		vBedroom[3]='x';
 
-		// VENTANA OFICINA (90)
-		if(vVent[4]=='1' || vOfi[11]=='1') {
+		// OFFICE WINDOW (90)
+		if(vWindow[4]=='1' || vOffice[11]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
-		if(vVent[4]=='0' || vOfi[11]=='0') {
+		if(vWindow[4]=='0' || vOffice[11]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
 		}
-		vVent[4]='x';
-		vOfi[11]='x';
+		vWindow[4]='x';
+		vOffice[11]='x';
 
-		// FINAL DE CARRERA PARCELA
+		// PARCEL LIMIT SWITCH
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
 
-			if (vVent[0]=='1' || vExt[4]=='1'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // S_Parcela
+			if (vWindow[0]=='1' || vOutside[4]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Parcel Servo
 				HAL_Delay(1000);
 			}
-			if (vVent[0]=='0' || vExt[4]=='0'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // S_Parcela
+			if (vWindow[0]=='0' || vOutside[4]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Parcel Servo
 				HAL_Delay(1000);
 			}
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // S_Parcela
-			vVent[0]='x'; // S_Parcela
-			vExt[4]='x'; // S_Parcela
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parcel Servo
+			vWindow[0]='x'; // Parcel Servo
+			vOutside[4]='x'; // Parcel Servo
 		}
 
-		// FINAL DE CARRERA GARAJE
+		// GARAGE LIMIT SWITCH
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
 
-			if (vVent[1]=='1' || vGar[1]=='1'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // S_Garaje
+			if (vWindow[1]=='1' || vGarage[1]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // Garage Servo
 				HAL_Delay(1000);
 			}
-			if (vVent[1]=='0' || vGar[1]=='0'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // S_Garaje
+			if (vWindow[1]=='0' || vGarage[1]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // Garage Servo
 				HAL_Delay(1000);
 			}
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // S_Garaje
-			vVent[1]='x'; // S_Garaje
-			vGar[1]='x'; // S_Garaje
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // Garage Servo
+			vWindow[1]='x'; // Garage Servo
+			vGarage[1]='x'; // Garage Servo
 		}
 
-		// VENTILADOR SALÓN
-		if(vTemp[0]=='1') {
+		// LINVING ROOM FAN
+		if(vWeather[0]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, 1000);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4,GPIO_PIN_SET);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5,GPIO_PIN_RESET);
 		}
-		if(vTemp[0]=='0') {
+		if(vWeather[0]=='0') {
 			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, 0);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4,GPIO_PIN_RESET);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5,GPIO_PIN_RESET);
 		}
 
-		// VALORES DE CONFIGURACIÓN
-		v_enc = temp_value(vAj[0], vAj[1], vAj[2]);
-		f_off = temp_value(vAj[3], vAj[4], vAj[5]);
-		h_on = temp_value(vAj[6], vAj[7], vAj[8]);
-		h_off = temp_value(vAj[9], vAj[10], vAj[11]);
+		// SETTINGS
+		f_on = temp_value(vSettings[0], vSettings[1], vSettings[2]);
+		f_off = temp_value(vSettings[3], vSettings[4], vSettings[5]);
+		h_on = temp_value(vSettings[6], vSettings[7], vSettings[8]);
+		h_off = temp_value(vSettings[9], vSettings[10], vSettings[11]);
 
-		rh_min = rh_value(vAj[12], vAj[13]);
-		rh_max = rh_value(vAj[14], vAj[15]);
+		rh_min = rh_value(vSettings[12], vSettings[13]);
+		rh_max = rh_value(vSettings[14], vSettings[15]);
 
 
-		/*----------- Lectura Sensores -----------*/
+		/*----------- Sensor Reading -----------*/
 
 		// LDR
 		if(HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
@@ -465,38 +463,38 @@ int main(void)
 
 		ldr(LDR_value);
 
-		// Lluvia
+		// Rain
 		if(HAL_ADC_PollForConversion(&hadc3, HAL_MAX_DELAY) == HAL_OK)
 			Rain_read = HAL_ADC_GetValue(&hadc3);
 
 		Rain = 100 - ((100*Rain_read)/255);
 
-		if(vExt[5] == '1'){
-			// Si hay ropa tendida y llueve (con tendedero cerrado)
-			if (Lluvia_real>5 && vExt[6] == '1' && awning == 0){
+		if(vOutside[5] == '1'){
+			// There are clothes and it is raining (closed awning)
+			if (Rain>5 && vOutside[6] == '1' && awning == 0){
 
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91); // Abrir tendedero
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91); // Open awning
 				HAL_Delay(3000);
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-				toldo = 1;
+				awning = 1;
 			}
 
-			// Si hay ropa tendida y llueve (con tendedero abierto)
-			// Si no hay ropa tendida y llueve (con tendedero cerrado)
+			// There are clothes and it is raining (opened awning)
+			// There are not clothes and it is raining (closed awning)
 
-			// Si no hay ropa tendida y llueve (con tendedero abierto)
-			else if (Lluvia_real>5 && vExt[6] == '0' && awning == 1){
+			// There are not clothes and it is raining (opened awning)
+			else if (Rain>5 && vOutside[6] == '0' && awning == 1){
 
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88); // Cerrar tendedero
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88); // Close awning
 				HAL_Delay(3000);
 				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
-				toldo = 0;
+				awning = 0;
 			}
 
-			// Si hay ropa tendida y no llueve (da igual el tendedero)
-			// Si hay no hay ropa tendida y no llueve (da igual el tendedero)
+			// There are clothes and it is not raining (awning does not matter)
+			// There are not clothes and it is not raining (awning does not matter)
 
-			vExt[0]='x';
+			vOutside[0]='x';
 		}
 
 		// HW-390
@@ -505,12 +503,12 @@ int main(void)
 
 		Hygro = 100 - ((100*Hygro_read)/255);
 
-		/*if(vHuer[1] == '1'){
-			// Si está apagado y no llega al mínimo o está encendido y no llega al máximo
-			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Higro_real<rh_min)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Higro_real<rh_max))){
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET); // Riego
+		/*if(vGarden[1] == '1'){
+			// It is turned off and it do not reach the minimum RH or it is turned on and it do not reach the maximum RH
+			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Hygro<rh_min)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (Hygro<rh_max))){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, SET); // Water
 			}
-			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Riego
+			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, RESET); // Water
 		}*/
 
 		//DHT22
@@ -523,24 +521,24 @@ int main(void)
 
 		  	// Interior
 		  	DHT22_getData(&DHT22_inside);
-		  	TempAireInt = DHT22_inside.Temperature;
+		  	TempInside = DHT22_inside.Temperature;
 		  	RHInside = DHT22_inside.Humidity;
 
 		  	readDHT = 0;
 		}
 
-		if(vTemp[4] == '1'){
-			// Si el aire está apagado y supera el máximo o está encendido y no llega al mínimo
-			/*if (((!HAL_GPIO_ReadPin(GPIOX, GPIO_PIN_X)) && (TempAireInt>v_enc)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempAireInt>v_apa))){
-				HAL_GPIO_WritePin(GPIOX, GPIO_PIN_XX, SET); // Ventilador Salón
+		if(vWeather[4] == '1'){
+			// Fan is turned off and it reach the maximum temperature or it is turned off and it does not reach the minimum temperature
+			/*if (((!HAL_GPIO_ReadPin(GPIOX, GPIO_PIN_X)) && (TempInside>f_on)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempInside>f_off))){
+				HAL_GPIO_WritePin(GPIOX, GPIO_PIN_XX, SET); // Living Room Fan
 			}
-			else HAL_GPIO_WritePin(GPIOX, GPIO_PIN_X, RESET); // Ventilador Salón*/
+			else HAL_GPIO_WritePin(GPIOX, GPIO_PIN_X, RESET); // Living Room Fan*/
 
-			// Si la calefacción está apagada y no llega al mínimo o está encendida y no llega al máximo
+			// Heat is turned off and it does not reach the minimum temperature or it is turned on and it does not reach the maximum temperature
 			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempInside<h_on)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempInside<h_off))){
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); // Calefacción
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); // Heat
 			}
-			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Calefacción
+			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Heat
 		}
   }
   /* USER CODE END 3 */
@@ -1313,87 +1311,87 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Cocina_Pin
-                          |L_Garaje_Pin|L_Tendedero_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|Living_Fan_1_Pin|Livin_Fan_2_Pin|L_Kitchen_Pin
+                          |L_Garage_Pin|L_ClothesLine_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOE, DHT22_Pin|DHT11_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOE, DHT22_In_Pin|DHT22_Out_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
-                          |L_Oficina_Pin|L_Derecha_Pin|L_TV_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Water_Pin|Heat_Pin|L_Mirror_Pin|L_Left_Pin
+                          |L_Office_Pin|L_Right_Pin|L_TV_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(L_Fregadero_GPIO_Port, L_Fregadero_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(L_Sink_GPIO_Port, L_Sink_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
-                          |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, L_Hall_Pin|L_Dining_Pin|L_Garden_Pin|L_Living_Pin
+                          |L_Porch_Pin|L_Relax_Pin|L_Bathroom_Pin|L_Bedroom_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : S_Int_Pin Fin_Parcela_Pin S_Ext_Pin */
-  GPIO_InitStruct.Pin = S_Int_Pin|Fin_Parcela_Pin|S_Ext_Pin;
+  /*Configure GPIO pins : S_In_Pin Parcel_Limit_Pin S_Out_Pin */
+  GPIO_InitStruct.Pin = S_In_Pin|Parcel_Limit_Pin|S_Out_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Fin_Garaje_Pin */
-  GPIO_InitStruct.Pin = Fin_Garaje_Pin;
+  /*Configure GPIO pin : Parcel_Garage_Pin */
+  GPIO_InitStruct.Pin = Parcel_Garage_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Fin_Garaje_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Parcel_Garage_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : B_Tim_Pers_Pin B_Stop_Pin */
-  GPIO_InitStruct.Pin = B_Tim_Pers_Pin|B_Stop_Pin;
+  /*Configure GPIO pins : B_People_Bell_Pin B_Stop_Pin */
+  GPIO_InitStruct.Pin = B_People_Bell_Pin|B_Stop_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : WiFi_OK_Pin DC_Salon_1_Pin DC_Salon_2_Pin L_Cocina_Pin
-                           L_Garaje_Pin L_Tendedero_Pin */
-  GPIO_InitStruct.Pin = WiFi_OK_Pin|DC_Salon_1_Pin|DC_Salon_2_Pin|L_Cocina_Pin
-                          |L_Garaje_Pin|L_Tendedero_Pin;
+  /*Configure GPIO pins : WiFi_OK_Pin Living_Fan_1_Pin Livin_Fan_2_Pin L_Kitchen_Pin
+                           L_Garage_Pin L_ClothesLine_Pin */
+  GPIO_InitStruct.Pin = WiFi_OK_Pin|Living_Fan_1_Pin|Livin_Fan_2_Pin|L_Kitchen_Pin
+                          |L_Garage_Pin|L_ClothesLine_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : DHT22_Pin DHT11_Pin */
-  GPIO_InitStruct.Pin = DHT22_Pin|DHT11_Pin;
+  /*Configure GPIO pins : DHT22_In_Pin DHT22_Out_Pin */
+  GPIO_InitStruct.Pin = DHT22_In_Pin|DHT22_Out_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Riego_Pin Peltier_Pin L_Espejo_Pin L_Izquierda_Pin
-                           L_Oficina_Pin L_Derecha_Pin L_TV_Pin */
-  GPIO_InitStruct.Pin = Riego_Pin|Peltier_Pin|L_Espejo_Pin|L_Izquierda_Pin
-                          |L_Oficina_Pin|L_Derecha_Pin|L_TV_Pin;
+  /*Configure GPIO pins : Water_Pin Heat_Pin L_Mirror_Pin L_Left_Pin
+                           L_Office_Pin L_Right_Pin L_TV_Pin */
+  GPIO_InitStruct.Pin = Water_Pin|Heat_Pin|L_Mirror_Pin|L_Left_Pin
+                          |L_Office_Pin|L_Right_Pin|L_TV_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : L_Fregadero_Pin */
-  GPIO_InitStruct.Pin = L_Fregadero_Pin;
+  /*Configure GPIO pin : L_Sink_Pin */
+  GPIO_InitStruct.Pin = L_Sink_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(L_Fregadero_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(L_Sink_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : L_Recibidor_Pin L_Comedor_Pin L_Jardin_Pin L_Sala_Pin
-                           L_Porche_Pin L_Ambiente_Pin L_Bano_Pin L_Dormitorio_Pin */
-  GPIO_InitStruct.Pin = L_Recibidor_Pin|L_Comedor_Pin|L_Jardin_Pin|L_Sala_Pin
-                          |L_Porche_Pin|L_Ambiente_Pin|L_Bano_Pin|L_Dormitorio_Pin;
+  /*Configure GPIO pins : L_Hall_Pin L_Dining_Pin L_Garden_Pin L_Living_Pin
+                           L_Porch_Pin L_Relax_Pin L_Bathroom_Pin L_Bedroom_Pin */
+  GPIO_InitStruct.Pin = L_Hall_Pin|L_Dining_Pin|L_Garden_Pin|L_Living_Pin
+                          |L_Porch_Pin|L_Relax_Pin|L_Bathroom_Pin|L_Bedroom_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : B_Tim_Veh_Pin */
-  GPIO_InitStruct.Pin = B_Tim_Veh_Pin;
+  /*Configure GPIO pin : B_Vehicle_Bell_Pin */
+  GPIO_InitStruct.Pin = B_Vehicle_Bell_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  HAL_GPIO_Init(B_Tim_Veh_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(B_Vehicle_Bell_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);

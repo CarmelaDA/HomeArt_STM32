@@ -5,15 +5,16 @@
  *
  */
 
+#include <DHT22.h>
 #include "stm32f4xx_hal.h"
-#include "DHT22.h"
 
 #define DHT22_PORT GPIOE
-#define DHT22_PIN GPIO_PIN_7
+#define DHT22_PIN GPIO_PIN_8
 
 uint8_t RH_byte1, RH_byte2, Temp_byte1, Temp_byte2;
 uint16_t SUM, RH, TEMP;
 uint16_t DHT22_presence = 0;
+
 
 void DHT22_Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin){
 
@@ -29,7 +30,7 @@ void DHT22_Set_Pin_Input(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin){
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	GPIO_InitStruct.Pin = GPIO_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-	GPIO_InitStruct.Pull = GPIO_PULLUP; // cambiar a PULLUP si no funciona así
+	GPIO_InitStruct.Pull = GPIO_PULLUP; // change to PULLUP if it does not work
 	HAL_GPIO_Init(GPIOx, &GPIO_InitStruct);
 }
 
