@@ -5,11 +5,11 @@
  *
  */
 
-#include <DHT22.h>
-#include "stm32f4xx_hal.h"
+#include "DHT22.h"
+
 
 #define DHT22_PORT GPIOE
-#define DHT22_PIN GPIO_PIN_8
+#define DHT22_PIN GPIO_PIN_7
 
 uint8_t RH_byte1, RH_byte2, Temp_byte1, Temp_byte2;
 uint16_t SUM, RH, TEMP;

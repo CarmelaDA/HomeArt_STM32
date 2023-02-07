@@ -6,7 +6,7 @@
 
 
 #include "UART_HAL.h"
-#include <string.h>
+#include "string.h"
 
 
 /* Define PC UART and WiFi UART */

@@ -10,6 +10,7 @@ C_SRCS += \
 ../Core/Src/ESP8266_HAL.c \
 ../Core/Src/LDR.c \
 ../Core/Src/LED.c \
+../Core/Src/OLED.c \
 ../Core/Src/RFID.c \
 ../Core/Src/RH.c \
 ../Core/Src/SG90.c \
@@ -28,6 +29,7 @@ OBJS += \
 ./Core/Src/ESP8266_HAL.o \
 ./Core/Src/LDR.o \
 ./Core/Src/LED.o \
+./Core/Src/OLED.o \
 ./Core/Src/RFID.o \
 ./Core/Src/RH.o \
 ./Core/Src/SG90.o \
@@ -46,6 +48,7 @@ C_DEPS += \
 ./Core/Src/ESP8266_HAL.d \
 ./Core/Src/LDR.d \
 ./Core/Src/LED.d \
+./Core/Src/OLED.d \
 ./Core/Src/RFID.d \
 ./Core/Src/RH.d \
 ./Core/Src/SG90.d \
