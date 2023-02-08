@@ -16,7 +16,10 @@ C_SRCS += \
 ../Core/Src/SG90.c \
 ../Core/Src/Temperature.c \
 ../Core/Src/UART_HAL.c \
+../Core/Src/fonts.c \
+../Core/Src/gfx.c \
 ../Core/Src/main.c \
+../Core/Src/ssd1306.c \
 ../Core/Src/stm32f4xx_hal_msp.c \
 ../Core/Src/stm32f4xx_it.c \
 ../Core/Src/syscalls.c \
@@ -35,7 +38,10 @@ OBJS += \
 ./Core/Src/SG90.o \
 ./Core/Src/Temperature.o \
 ./Core/Src/UART_HAL.o \
+./Core/Src/fonts.o \
+./Core/Src/gfx.o \
 ./Core/Src/main.o \
+./Core/Src/ssd1306.o \
 ./Core/Src/stm32f4xx_hal_msp.o \
 ./Core/Src/stm32f4xx_it.o \
 ./Core/Src/syscalls.o \
@@ -54,7 +60,10 @@ C_DEPS += \
 ./Core/Src/SG90.d \
 ./Core/Src/Temperature.d \
 ./Core/Src/UART_HAL.d \
+./Core/Src/fonts.d \
+./Core/Src/gfx.d \
 ./Core/Src/main.d \
+./Core/Src/ssd1306.d \
 ./Core/Src/stm32f4xx_hal_msp.d \
 ./Core/Src/stm32f4xx_it.d \
 ./Core/Src/syscalls.d \

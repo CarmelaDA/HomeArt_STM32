@@ -31,6 +31,9 @@
 #include "SG90.h"
 #include "DHT22.h"
 #include "Temperature.h"
+#include "gfx.h"
+#include "fonts.h"
+#include "ssd1306.h"
 
 /* USER CODE END Includes */
 
@@ -200,6 +203,7 @@ void delay(uint16_t time){
 	while((__HAL_TIM_GET_COUNTER(&htim6))<time);
 }
 
+
 /* USER CODE END 0 */
 
 /**
@@ -286,6 +290,23 @@ int main(void)
 
   //__HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
   ESP_Init("iPhone Carmela","pistacho");
+
+  // OLED Thermostat
+  oled_init(); // Initialize OLED
+
+  // Frame
+  line_h(0, 127, 1, 2, 1);
+  line_h(0, 127, 30, 2, 1);
+  line_v(0, 31, 1, 2, 1);
+  line_v(0, 31, 127, 2, 1);
+
+  // Line
+  line_h(5, 122, 15, 1, 1);
+
+  graphics_text(7, 5, FONT_SEVEN_DOT, "IN");
+  graphics_text(7, 19, FONT_SEVEN_DOT, "OUT");
+
+  oled_update(); // Update OLED
 
   /* USER CODE END 2 */
 
@@ -516,15 +537,56 @@ int main(void)
 		//DHT22
 		if(readDHT == 1){
 
-			// Exterior
-			//DHT22_getData(&DHT22_outside);
-		  	//TempOutside = DHT22_outside.Temperature;
-		  	//RHOutside = DHT22_outside.Humidity;
+		  	// Inside
+		  	DHT22_getData(&DHT22_inside);
+		  	RHInside = DHT22_inside.Humidity;
+		  	TempInside = DHT22_inside.Temperature;
 
-		  	// Interior
-		  	//DHT22_getData(&DHT22_inside);
-		  	//TempInside = DHT22_inside.Temperature;
-		  	//RHInside = DHT22_inside.Humidity;
+		    int in_rh_unit = RHInside;
+		    int in_rh_dec = (RHInside-in_rh_unit)*10;
+		    char c_in_rh_unit[2];
+		    char c_in_rh_dec[1];
+		    itoa(in_rh_unit, c_in_rh_unit, 10);
+		    itoa(in_rh_dec, c_in_rh_dec, 10);
+
+		    int in_temp_unit = TempInside;
+		    int in_temp_dec = (TempInside-in_temp_unit)*10;
+		    char c_in_temp_unit[2];
+		    char c_in_temp_dec[1];
+		    itoa(in_temp_unit, c_in_temp_unit, 10);
+		    itoa(in_temp_dec, c_in_temp_dec, 10);
+
+		    graphics_text(44, 6, FONT_SIX_DOT, "RH      .");
+		    graphics_text(56, 6, FONT_SIX_DOT, c_in_rh_unit);
+		    graphics_text(68, 6, FONT_SIX_DOT, c_in_rh_dec);
+		    graphics_text(75, 6, FONT_SIX_DOT, "%");
+
+		    graphics_text(90, 6, FONT_SIX_DOT, "T      .");
+		    graphics_text(98, 6, FONT_SIX_DOT, c_in_temp_unit);
+		    graphics_text(110, 6, FONT_SIX_DOT, c_in_temp_dec);
+		    graphics_text(117, 6, FONT_SIX_DOT, "C");
+
+			// Exterior
+			DHT22_getData(&DHT22_outside);
+		  	RHOutside = DHT22_outside.Humidity;
+		  	TempOutside = DHT22_outside.Temperature;
+
+		    int out_rh_unit = RHOutside;
+		    char c_out_rh_unit[2];
+		    itoa(out_rh_unit, c_out_rh_unit, 10);
+
+		    int out_temp_unit = TempOutside;
+		    char c_out_temp_unit[2];
+		    itoa(out_temp_unit, c_out_temp_unit, 10);
+
+		    graphics_text(44, 20, FONT_SIX_DOT, "RH      .0 %");
+		    graphics_text(56, 20, FONT_SIX_DOT, c_out_rh_unit);
+
+		    graphics_text(90, 20, FONT_SIX_DOT, "T      .0 C");
+		    graphics_text(98, 20, FONT_SIX_DOT, c_out_temp_unit);
+
+
+		    oled_update(); // Update OLED
 
 		  	readDHT = 0;
 		}

@@ -1,0 +1,10 @@
+ssd1306.c:11:6:ssd1306_command	32	static
+ssd1306.c:22:6:oled_update	40	static
+ssd1306.c:51:6:oled_init	16	static
+ssd1306.c:120:6:InvertDisplay	16	static
+ssd1306.c:133:6:Startscrollright	16	static
+ssd1306.c:148:6:Startscrollleft	16	static
+ssd1306.c:163:6:Startscrolldiagright	16	static
+ssd1306.c:180:6:Startscrolldiagleft	16	static
+ssd1306.c:193:6:Stopscroll	8	static
+ssd1306.c:200:6:Dim	24	static
