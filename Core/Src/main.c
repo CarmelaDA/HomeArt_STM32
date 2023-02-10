@@ -535,7 +535,7 @@ int main(void)
 		}*/
 
 		//DHT22
-		if(readDHT == 1){
+		if(readDHT != 0){
 
 		  	// Inside
 		  	DHT22_getData(&DHT22_inside);
@@ -556,6 +556,21 @@ int main(void)
 		    itoa(in_temp_unit, c_in_temp_unit, 10);
 		    itoa(in_temp_dec, c_in_temp_dec, 10);
 
+		    clear();
+
+		    // Frame
+		    line_h(0, 127, 1, 2, 1);
+		    line_h(0, 127, 30, 2, 1);
+		    line_v(0, 31, 1, 2, 1);
+		    line_v(0, 31, 127, 2, 1);
+
+		    // Line
+		    line_h(5, 122, 15, 1, 1);
+
+		    graphics_text(7, 5, FONT_SEVEN_DOT, "IN");
+		    graphics_text(7, 19, FONT_SEVEN_DOT, "OUT");
+
+		    // Data
 		    graphics_text(44, 6, FONT_SIX_DOT, "RH      .");
 		    graphics_text(56, 6, FONT_SIX_DOT, c_in_rh_unit);
 		    graphics_text(68, 6, FONT_SIX_DOT, c_in_rh_dec);

@@ -296,10 +296,10 @@ void ESP_messageHandler(void){
 
 
 	// DHT22
-	readDHT = 0;
-
-	if(textrc[27] == '[') readDHT = 1;
-
+	if (fragment[0] == 'H'){
+		UART_send("LECTURA \n", PC_UART);
+		readDHT = textrc[28]; // Orden de Lectura
+	}
 
 	// SECURITY
 	if (fragment[0] == 's'){
