@@ -383,7 +383,7 @@ int main(void)
 		vOutside[0]='x';
 
 		// LIVING ROOM WINDOW (90)
-		if(vWindow[2]=='1' || vLiving[5]=='1') {
+		/*if(vWindow[2]=='1' || vLiving[5]=='1') {
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 91);
 			HAL_Delay(3000);
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
@@ -394,7 +394,7 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);
 		}
 		vWindow[2]='x';
-		vLiving[5]='x';
+		vLiving[5]='x';*/
 
 		// BEDROOM WINDOW (90)
 		if(vWindow[3]=='1' || vBedroom[3]=='1') {
@@ -454,18 +454,6 @@ int main(void)
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // Garage Servo
 			vWindow[1]='x'; // Garage Servo
 			vGarage[1]='x'; // Garage Servo
-		}
-
-		// LINVING ROOM FAN
-		if(vWeather[0]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, 1000);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4,GPIO_PIN_SET);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5,GPIO_PIN_RESET);
-		}
-		if(vWeather[0]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim9, TIM_CHANNEL_1, 0);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4,GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5,GPIO_PIN_RESET);
 		}
 
 		// SETTINGS
@@ -606,18 +594,46 @@ int main(void)
 		  	readDHT = 0;
 		}
 
-		if(vWeather[4] == '1'){
+		if(vWeather[2] == '1'){
 			// Fan is turned off and it reach the maximum temperature or it is turned off and it does not reach the minimum temperature
-			/*if (((!HAL_GPIO_ReadPin(GPIOX, GPIO_PIN_X)) && (TempInside>f_on)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempInside>f_off))){
-				HAL_GPIO_WritePin(GPIOX, GPIO_PIN_XX, SET); // Living Room Fan
+			if ((!fan && (TempInside>f_on)) || (fan && (TempInside>f_off))){
+				__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 30); 	// Living Room Fan
+				fan = 1;
 			}
-			else HAL_GPIO_WritePin(GPIOX, GPIO_PIN_X, RESET); // Living Room Fan*/
+			else{
+				__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90); 	// Living Room Fan
+				fan = 0;
+			}
 
 			// Heat is turned off and it does not reach the minimum temperature or it is turned on and it does not reach the maximum temperature
-			if (((!HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_15)) && (TempInside<h_on)) || ((HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_13)) && (TempInside<h_off))){
-				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); // Heat
+			if ((!heat && (TempInside<h_on)) || (heat && (TempInside<h_off))){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET); 	// Heat
+				heat = 1;
 			}
-			else HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); // Heat
+			else{
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET); 	// Heat
+				heat = 0;
+			}
+		}
+
+		if(vWeather[2] == '0'){
+			if(vWeather[0] == '0'){
+				__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 90);	// Fan
+				fan = 0;
+			}
+			else if(vWeather[0] == '1'){
+				__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, 30);
+				fan = 1;
+			}
+
+			if(vWeather[1] == '0'){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, RESET);		// Heat
+				heat = 0;
+			}
+			else if(vWeather[1] == '1'){
+				HAL_GPIO_WritePin(GPIOB, GPIO_PIN_15, SET);
+				heat = 1;
+			}
 		}
   }
   /* USER CODE END 3 */
@@ -1424,8 +1440,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|Living_Fan_1_Pin|Livin_Fan_2_Pin|L_Kitchen_Pin
-                          |L_Garage_Pin|L_ClothesLine_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, WiFi_OK_Pin|L_Kitchen_Pin|L_Garage_Pin|L_ClothesLine_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOE, DHT22_In_Pin|DHT22_Out_Pin, GPIO_PIN_RESET);
@@ -1447,11 +1462,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : Parcel_Garage_Pin */
-  GPIO_InitStruct.Pin = Parcel_Garage_Pin;
+  /*Configure GPIO pin : Garage_Limit_Pin */
+  GPIO_InitStruct.Pin = Garage_Limit_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Parcel_Garage_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(Garage_Limit_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : B_People_Bell_Pin B_Stop_Pin */
   GPIO_InitStruct.Pin = B_People_Bell_Pin|B_Stop_Pin;
@@ -1459,10 +1474,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : WiFi_OK_Pin Living_Fan_1_Pin Livin_Fan_2_Pin L_Kitchen_Pin
-                           L_Garage_Pin L_ClothesLine_Pin */
-  GPIO_InitStruct.Pin = WiFi_OK_Pin|Living_Fan_1_Pin|Livin_Fan_2_Pin|L_Kitchen_Pin
-                          |L_Garage_Pin|L_ClothesLine_Pin;
+  /*Configure GPIO pins : WiFi_OK_Pin L_Kitchen_Pin L_Garage_Pin L_ClothesLine_Pin */
+  GPIO_InitStruct.Pin = WiFi_OK_Pin|L_Kitchen_Pin|L_Garage_Pin|L_ClothesLine_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

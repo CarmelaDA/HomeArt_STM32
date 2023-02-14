@@ -12,10 +12,10 @@
 // Arrays
 char vSecurity[2];
 char vLight[27];
-char vWindow[5];
+char vWindow[4];
 char vOutside[7];
-char vWeather[5];
-char vLiving[6];
+char vWeather[3];
+char vLiving[5];
 char vKitchen[2];
 char vBath[2];
 char vBedroom[4];
