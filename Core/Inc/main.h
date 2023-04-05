@@ -99,6 +99,8 @@ void Error_Handler(void);
 #define Water_GPIO_Port GPIOB
 #define Heat_Pin GPIO_PIN_15
 #define Heat_GPIO_Port GPIOB
+#define Buzzer_Pin GPIO_PIN_12
+#define Buzzer_GPIO_Port GPIOD
 #define Office_Servo_Pin GPIO_PIN_8
 #define Office_Servo_GPIO_Port GPIOC
 #define Living_Servo_Pin GPIO_PIN_9
