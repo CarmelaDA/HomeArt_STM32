@@ -238,7 +238,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     PB8     ------> I2C1_SCL
     PB9     ------> I2C1_SDA
     */
-    GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin;
+    GPIO_InitStruct.Pin = OLED_SCK_Pin|OLED_SDA_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -274,7 +274,7 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
     PB8     ------> I2C1_SCL
     PB9     ------> I2C1_SDA
     */
-    HAL_GPIO_DeInit(OLED_SCL_GPIO_Port, OLED_SCL_Pin);
+    HAL_GPIO_DeInit(OLED_SCK_GPIO_Port, OLED_SCK_Pin);
 
     HAL_GPIO_DeInit(OLED_SDA_GPIO_Port, OLED_SDA_Pin);
 

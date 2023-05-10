@@ -29,8 +29,6 @@ void oled_update(void)
   ssd1306_command(0); // Page start address (0 = reset)
   ssd1306_command(3); // Page end address
 
-
-
 	//SEND data in 16byte packs
 	uint8_t buffer[17];
 	buffer[0] = 0x40;
@@ -131,6 +129,7 @@ void InvertDisplay(uint8_t i) {
 // Hint, the display is 16 rows tall. To scroll the whole display, run:
 // display.scrollright(0x00, 0x0F)
 void Startscrollright(uint8_t start, uint8_t stop){
+
   ssd1306_command(SSD1306_RIGHT_HORIZONTAL_SCROLL);
   ssd1306_command(0X00);
   ssd1306_command(start);

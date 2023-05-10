@@ -15,4 +15,4 @@
 
 int rgb_value(char i, char j, char k);
 
-void auto_light(int i);
+//void auto_light(int i);

@@ -42,7 +42,7 @@ int rgb_value(char i, char j, char k){
 	return a+b+c;
 }
 
-void auto_light(int i){
+/*void auto_light(int i){
 
 	if(i){
 		//vIlum[23]='1';
@@ -60,4 +60,4 @@ void auto_light(int i){
 		//vIlum[25]='0';
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, RESET);
 	}
-}
+}*/

@@ -29,23 +29,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  12 .ARM.attributes 00000030  00000000  00000000  00020070  2**0
                   CONTENTS, READONLY
- 13 .debug_info   0001eea1  00000000  00000000  000200a0  2**0
+ 13 .debug_info   0001ed9f  00000000  00000000  000200a0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_abbrev 00003e0e  00000000  00000000  0003ef41  2**0
+ 14 .debug_abbrev 00003dda  00000000  00000000  0003ee3f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_aranges 00001398  00000000  00000000  00042d50  2**3
+ 15 .debug_aranges 00001390  00000000  00000000  00042c20  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_ranges 00001268  00000000  00000000  000440e8  2**3
+ 16 .debug_ranges 00001260  00000000  00000000  00043fb0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00025bd6  00000000  00000000  00045350  2**0
+ 17 .debug_macro  00025be4  00000000  00000000  00045210  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   0001c834  00000000  00000000  0006af26  2**0
+ 18 .debug_line   0001c80c  00000000  00000000  0006adf4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000dbcfc  00000000  00000000  0008775a  2**0
+ 19 .debug_str    000dbd1f  00000000  00000000  00087600  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000053  00000000  00000000  00163456  2**0
+ 20 .comment      00000053  00000000  00000000  0016331f  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  000055d8  00000000  00000000  001634ac  2**2
+ 21 .debug_frame  000055b4  00000000  00000000  00163374  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -4626,7 +4626,8 @@ void actParcelRFID(){
  800267c:	b580      	push	{r7, lr}
  800267e:	af00      	add	r7, sp, #0
 
-	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); 	// Abrir S_Parcela
+	// Abrir S_Parcela
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91);
  8002680:	e003      	b.n	800268a <actParcelRFID+0xe>
  8002682:	4b1a      	ldr	r3, [pc, #104]	; (80026ec <actParcelRFID+0x70>)
  8002684:	681b      	ldr	r3, [r3, #0]
@@ -4657,7 +4658,8 @@ void actParcelRFID(){
  80026b0:	f241 3088 	movw	r0, #5000	; 0x1388
  80026b4:	f003 fb2c 	bl	8005d10 <HAL_Delay>
 
-	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); 	// Cerrar S_Parcela
+	// Cerrar S_Parcela
+	while(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 1) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
  80026b8:	e003      	b.n	80026c2 <actParcelRFID+0x46>
  80026ba:	4b0c      	ldr	r3, [pc, #48]	; (80026ec <actParcelRFID+0x70>)
  80026bc:	681b      	ldr	r3, [r3, #0]
@@ -11337,8 +11339,6 @@ void oled_update(void)
  800515c:	2003      	movs	r0, #3
  800515e:	f7ff ffd3 	bl	8005108 <ssd1306_command>
 
-
-
 	//SEND data in 16byte packs
 	uint8_t buffer[17];
 	buffer[0] = 0x40;
@@ -11852,7 +11852,7 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef* hi2c)
     PB8     ------> I2C1_SCL
     PB9     ------> I2C1_SDA
     */
-    GPIO_InitStruct.Pin = OLED_SCL_Pin|OLED_SDA_Pin;
+    GPIO_InitStruct.Pin = OLED_SCK_Pin|OLED_SDA_Pin;
  80054a2:	f44f 7340 	mov.w	r3, #768	; 0x300
  80054a6:	617b      	str	r3, [r7, #20]
     GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
@@ -12340,7 +12340,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
  80057f4:	f003 0308 	and.w	r3, r3, #8
  80057f8:	60fb      	str	r3, [r7, #12]
  80057fa:	68fb      	ldr	r3, [r7, #12]
-    GPIO_InitStruct.Pin = GPIO_PIN_12;
+    GPIO_InitStruct.Pin = Buzzer_Pin;
  80057fc:	f44f 5380 	mov.w	r3, #4096	; 0x1000
  8005800:	627b      	str	r3, [r7, #36]	; 0x24
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
@@ -12355,7 +12355,7 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
     GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
  800580e:	2302      	movs	r3, #2
  8005810:	637b      	str	r3, [r7, #52]	; 0x34
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+    HAL_GPIO_Init(Buzzer_GPIO_Port, &GPIO_InitStruct);
  8005812:	f107 0324 	add.w	r3, r7, #36	; 0x24
  8005816:	4619      	mov	r1, r3
  8005818:	481c      	ldr	r0, [pc, #112]	; (800588c <HAL_TIM_MspPostInit+0x224>)
