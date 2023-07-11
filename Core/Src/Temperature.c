@@ -1,7 +1,7 @@
 /*
  * Temperatura.c
  *
- * Creado por Carmen Díez Almoguera, 2022
+ * Creado por Carmen Díez Almoguera, 2023
  *
  */
 
@@ -11,9 +11,24 @@
 
 float temp_value(char i, char j, char k){
 
-	float a, b, c;
+	//float a, b, c;
 
-	if(i == '0') a = 0;
+	char uTemp[2];
+	uTemp[0] = i;
+	uTemp[1] = j;
+
+	char dTemp[1];
+	dTemp[0] = k;
+
+
+	int unit = atoi(uTemp) ;
+	int dec = atoi(dTemp);
+
+	float val = unit + dec/10;
+
+	return val;
+
+	/*if(i == '0') a = 0;
 	else if(i == '1') a = 10;
 	else if(i == '2') a = 20;
 	else if(i == '3') a = 30;
@@ -47,7 +62,7 @@ float temp_value(char i, char j, char k){
 	else if(k == '8') c = 0.8;
 	else if(k == '9') c = 0.9;
 
-	return a+b+c;
+	return a+b+c;*/
 }
 
 

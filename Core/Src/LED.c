@@ -1,7 +1,7 @@
 /*
  * LED.c
  *
- * Creado por Carmen Díez Almoguera, 2022
+ * Creado por Carmen Díez Almoguera, 2023
  *
  */
 
@@ -11,9 +11,18 @@
 
 int rgb_value(char i, char j, char k){
 
-	int a, b, c;
+	//int a, b, c;
 
-	if(i == '0') a = 0;
+	char rgb[3];
+	rgb[0] = i;
+	rgb[1] = j;
+	rgb[2] = k;
+
+	int val = atoi(rgb) ;
+
+	return val;
+
+	/*if(i == '0') a = 0;
 	else if(i == '1') a = 100;
 	else if(i == '2') a = 200;
 
@@ -39,7 +48,7 @@ int rgb_value(char i, char j, char k){
 	else if(k == '8') c = 8;
 	else if(k == '9') c = 9;
 
-	return a+b+c;
+	return a+b+c;*/
 }
 
 /*void auto_light(int i){

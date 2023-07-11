@@ -1,7 +1,7 @@
 /*
  * ESP8266_HAL.c
  *
- * Creado por Carmen Díez Almoguera, 2022
+ * Modificado por Carmen Díez Almoguera, 2023
  *
  */
 

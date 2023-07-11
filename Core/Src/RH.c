@@ -1,7 +1,7 @@
 /*
  * RH.c
  *
- * Creado por Carmen Díez Almoguera, 2022
+ * Creado por Carmen Díez Almoguera, 2023
  *
  */
 
@@ -11,9 +11,17 @@
 
 int rh_value(char i, char j){
 
-	int a, b;
+	//int a, b;
 
-	if(i == '0') a = 0;
+	char rh[2];
+	rh[0] = i;
+	rh[1] = j;
+
+	int val = atoi(rh) ;
+
+	return val;
+
+	/*if(i == '0') a = 0;
 	else if(i == '1') a = 10;
 	else if(i == '2') a = 20;
 	else if(i == '3') a = 30;
@@ -36,7 +44,7 @@ int rh_value(char i, char j){
 	else if(j == '8') b = 8;
 	else if(j == '9') b = 9;
 
-	return a+b;
+	return a+b;*/
 }
 
 
