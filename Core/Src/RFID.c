@@ -12,10 +12,10 @@
 extern UART_HandleTypeDef huart3;
 extern UART_HandleTypeDef huart6;
 
+char vehicle[16] = "";
 
 int readRFID(){
 
-	  char vehicle[16] = "";
 
 	  char car[3] = "247";
 	  char motorcycle[3] = "355";

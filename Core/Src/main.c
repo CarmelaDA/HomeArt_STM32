@@ -34,6 +34,8 @@
 #include "gfx.h"
 #include "fonts.h"
 #include "ssd1306.h"
+#include "RFID.h"
+#include "LDR.h"
 
 /* USER CODE END Includes */
 
@@ -97,6 +99,7 @@ volatile int bedroom = 0; 		// 1=up 		0=down
 volatile int water = 0; 		// 1=on 		0=off
 volatile int fan = 0; 			// 1=on 		0=off
 volatile int heat = 0; 			// 1=on 		0=off
+
 
 
 /*----------- Sensors -----------*/
@@ -262,7 +265,7 @@ int main(void)
   // Garage Servo
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_2);
 
-  // Swning Servo
+  // Awning Servo
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_3);
 
   // Living Room Servo
@@ -322,14 +325,15 @@ int main(void)
 		// Vehicle Doorbell
 		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_0) == 0){
 
-			int known = readRFID();
-			if(known == 1){
+			//int known;
+			//known = readRFID();
+			if(readRFID() == 1){
 				char kn[15] = "OPENING DOOR \n\n";
 				HAL_UART_Transmit(&huart6, (uint8_t *) kn, 15, HAL_MAX_DELAY);
 
 				actParcelRFID();
 			}
-			else if(known == 0){
+			else if(readRFID() == 0){
 				char unkn[19] = "CALLING THE BELL \n\n";
 				HAL_UART_Transmit(&huart6, (uint8_t *) unkn, 19, HAL_MAX_DELAY);
 
@@ -360,23 +364,55 @@ int main(void)
 		}
 
 		// PARCEL DOOR (90)
-		if(vWindow[0]=='1' || vOutside[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91);
-		if(vWindow[0]=='0' || vOutside[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89);
+		if(vWindow[0]=='1' || vOutside[4]=='1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 86);
+		if(vWindow[0]=='0' || vOutside[4]=='0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 94);
 
 		// GARAGE DOOR (90)
 		if(vWindow[1]=='1' || vGarage[1] == '1') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // Faster at 30
-		if(vWindow[1]=='0' || vGarage[1] == '0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89);
+		if(vWindow[1]=='0' || vGarage[1] == '0') __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 96);
+
+		// PARCEL LIMIT SWITCH
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
+
+			if (vWindow[0]=='1' || vOutside[4]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 94); // Parcel Servo
+				HAL_Delay(200);
+			}
+			if (vWindow[0]=='0' || vOutside[4]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 86); // Parcel Servo
+				HAL_Delay(200);
+			}
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parcel Servo
+			vWindow[0]='x'; // Parcel Servo
+			vOutside[4]='x'; // Parcel Servo
+		}
+
+		// GARAGE LIMIT SWITCH
+		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
+
+			if (vWindow[1]=='1' || vGarage[1]=='1'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 96); // Garage Servo
+				HAL_Delay(400);
+			}
+			if (vWindow[1]=='0' || vGarage[1]=='0'){
+				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // Garage Servo
+				HAL_Delay(400);
+			}
+			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 94); // Garage Servo
+			vWindow[1]='x'; // Garage Servo
+			vGarage[1]='x'; // Garage Servo
+		}
 
 		// CLOTHES LINE AWNING (90)
 		if(vOutside[0]=='1'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 91);
-			HAL_Delay(3000);
+			HAL_Delay(1400);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
 			awning = 1;
 		}
 		if(vOutside[0]=='0'){
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 88);
-			HAL_Delay(3000);
+			HAL_Delay(1650);
 			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 90);
 			awning = 0;
 		}
@@ -398,63 +434,32 @@ int main(void)
 
 		// BEDROOM WINDOW (90)
 		if(vWindow[3]=='1' || vBedroom[3]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 92);
-			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 94);// 92
+			HAL_Delay(6000);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);//90
 		}
 		if(vWindow[3]=='0' || vBedroom[3]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 89);
-			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 86);// 89
+			HAL_Delay(6000);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 90);// 90
 		}
 		vWindow[3]='x';
 		vBedroom[3]='x';
 
 		// OFFICE WINDOW (90)
 		if(vWindow[4]=='1' || vOffice[11]=='1') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 91);
-			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 86);//91
+			HAL_Delay(7000);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);//90
 		}
 		if(vWindow[4]=='0' || vOffice[11]=='0') {
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 88);
-			HAL_Delay(3000);
-			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 92);//88
+			HAL_Delay(4500);
+			__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 90);//90
 		}
 		vWindow[4]='x';
 		vOffice[11]='x';
 
-		// PARCEL LIMIT SWITCH
-		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_6) == 0){
-
-			if (vWindow[0]=='1' || vOutside[4]=='1'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 89); // Parcel Servo
-				HAL_Delay(1000);
-			}
-			if (vWindow[0]=='0' || vOutside[4]=='0'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 91); // Parcel Servo
-				HAL_Delay(1000);
-			}
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 90); // Parcel Servo
-			vWindow[0]='x'; // Parcel Servo
-			vOutside[4]='x'; // Parcel Servo
-		}
-
-		// GARAGE LIMIT SWITCH
-		if(HAL_GPIO_ReadPin(GPIOE, GPIO_PIN_4) == 0){
-
-			if (vWindow[1]=='1' || vGarage[1]=='1'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 89); // Garage Servo
-				HAL_Delay(1000);
-			}
-			if (vWindow[1]=='0' || vGarage[1]=='0'){
-				__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 92); // Garage Servo
-				HAL_Delay(1000);
-			}
-			__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, 90); // Garage Servo
-			vWindow[1]='x'; // Garage Servo
-			vGarage[1]='x'; // Garage Servo
-		}
 
 		// SETTINGS
 		f_on = temp_value(vSettings[0], vSettings[1], vSettings[2]);
@@ -1456,17 +1461,11 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOD, L_Hall_Pin|L_Dining_Pin|L_Garden_Pin|L_Living_Pin
                           |L_Porch_Pin|L_Relax_Pin|L_Bathroom_Pin|L_Bedroom_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : S_In_Pin Parcel_Limit_Pin S_Out_Pin */
-  GPIO_InitStruct.Pin = S_In_Pin|Parcel_Limit_Pin|S_Out_Pin;
+  /*Configure GPIO pins : S_In_Pin Garaje_Limit_Pin Parcel_Limit_Pin S_Out_Pin */
+  GPIO_InitStruct.Pin = S_In_Pin|Garaje_Limit_Pin|Parcel_Limit_Pin|S_Out_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : Garage_Limit_Pin */
-  GPIO_InitStruct.Pin = Garage_Limit_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(Garage_Limit_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : B_People_Bell_Pin B_Stop_Pin */
   GPIO_InitStruct.Pin = B_People_Bell_Pin|B_Stop_Pin;
@@ -1515,8 +1514,8 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : B_Vehicle_Bell_Pin */
   GPIO_InitStruct.Pin = B_Vehicle_Bell_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B_Vehicle_Bell_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/

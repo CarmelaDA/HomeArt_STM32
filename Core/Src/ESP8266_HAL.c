@@ -423,11 +423,11 @@ void ESP_messageHandler(void){
 	}*/
 	if (fragment[0] == 'd'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA DORMITORIO)\n", PC_UART);
-		vWindow[2] = textrc[34]; 	// V. Dormitorio
+		vWindow[3] = textrc[37]; 	// V. Dormitorio
 	}
 	if (fragment[0] == 'o'){
 		UART_send("PUERTAS Y VENTANAS (VENTANA OFICINA)\n", PC_UART);
-		vWindow[3] = textrc[3]; 	// V. Oficina
+		vWindow[4] = textrc[40]; 	// V. Oficina
 	}
 
 	// WEATHER
@@ -537,8 +537,8 @@ void ESP_messageHandler(void){
 	// BEDROOM
 	if (fragment[0] == 'r'){
 		UART_send("LUCES (DORMITORIO) \n", PC_UART);
-		vBedroom[0] = textrc[28]; 	// Luz Dormitorio
-		vBedroom[1] = textrc[31]; 	// Luz Mesita Izq
+		vBedroom[0] = textrc[31]; 	// Luz Dormitorio
+		vBedroom[1] = textrc[28]; 	// Luz Mesita Izq
 		vBedroom[2] = textrc[34]; 	// Luz Mesita Dch
 		//vBedroom[3] = textrc[37]; 	// V. Dormitorio
 

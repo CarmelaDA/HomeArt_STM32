@@ -28,7 +28,6 @@ void playBell(){
 	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 0);
 }
 
-
 void playAlarm(){
 
 	uint8_t tone;

@@ -35,7 +35,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Inc/Buzzer.h ../Core/Inc/main.h ../Core/Inc/ESP8266_HAL.h \
  ../Core/Inc/LED.h ../Core/Inc/RH.h ../Core/Inc/SG90.h \
  ../Core/Inc/DHT22.h ../Core/Inc/Temperature.h ../Core/Inc/gfx.h \
- ../Core/Inc/fonts.h ../Core/Inc/ssd1306.h
+ ../Core/Inc/fonts.h ../Core/Inc/ssd1306.h ../Core/Inc/RFID.h \
+ ../Core/Inc/LDR.h
 
 ../Core/Inc/main.h:
 
@@ -126,3 +127,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/fonts.h:
 
 ../Core/Inc/ssd1306.h:
+
+../Core/Inc/RFID.h:
+
+../Core/Inc/LDR.h:

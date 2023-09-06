@@ -1,2 +1,2 @@
 Buzzer.c:14:6:playBell	16	static
-Buzzer.c:32:6:playAlarm	16	static
+Buzzer.c:31:6:playAlarm	16	static

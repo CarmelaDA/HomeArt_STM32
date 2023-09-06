@@ -63,12 +63,12 @@ void Error_Handler(void);
 #define S_In_Pin GPIO_PIN_3
 #define S_In_GPIO_Port GPIOE
 #define S_In_EXTI_IRQn EXTI3_IRQn
-#define Parcel_Limit_Pin GPIO_PIN_4
+#define Garaje_Limit_Pin GPIO_PIN_4
+#define Garaje_Limit_GPIO_Port GPIOE
+#define Garaje_Limit_EXTI_IRQn EXTI4_IRQn
+#define Parcel_Limit_Pin GPIO_PIN_6
 #define Parcel_Limit_GPIO_Port GPIOE
-#define Parcel_Limit_EXTI_IRQn EXTI4_IRQn
-#define Garage_Limit_Pin GPIO_PIN_6
-#define Garage_Limit_GPIO_Port GPIOE
-#define Garage_Limit_EXTI_IRQn EXTI9_5_IRQn
+#define Parcel_Limit_EXTI_IRQn EXTI9_5_IRQn
 #define B_People_Bell_Pin GPIO_PIN_13
 #define B_People_Bell_GPIO_Port GPIOC
 #define B_People_Bell_EXTI_IRQn EXTI15_10_IRQn
